@@ -1,0 +1,12 @@
+# Java (Spring Boot)
+/backend/target/    
+*.class             ）
+*.log              
+
+# Node (React)
+/frontend/node_modules/  
+dist/                    
+
+# Others
+.DS_Store          
+.env     

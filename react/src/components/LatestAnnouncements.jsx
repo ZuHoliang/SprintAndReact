@@ -49,10 +49,10 @@ const LatestAnnouncements = () => {
         ) : (
           <ul className="announcement-list">
             {announcements.map((item) => (
-              <li key={item.id}>
+              <li key={item.announcementId}>
                 <strong>{item.title}</strong>
                 <br />
-                <small>{new Date(item.createTime).toLocaleDateString}</small>
+                <small>{new Date(item.createdTime).toLocaleDateString}</small>
               </li>
             ))}
           </ul>
