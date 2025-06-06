@@ -1,0 +1,57 @@
+.nav-button {
+  display: inline-block;
+  padding: 10px 20px;
+  margin: 8px;
+  background-color: #007bff;
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  min-width: 140px;
+}
+
+.nav-button:hover {
+  background-color: #0056b3;
+}
+
+/* logout button styling to match nav buttons */
+.logout-button {
+  display: inline-block;
+  padding: 10px 20px;
+  margin: 8px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.logout-button:hover {
+  background-color: #c82333;
+}
+
+/* Add layout styling to space out buttons better */
+.right-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  padding: 20px;
+  border-left: 2px solid #eee;
+}
+
+/* Optional container for buttons */
+.button-group {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 20px;
+}

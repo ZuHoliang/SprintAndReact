@@ -1,0 +1,23 @@
+.schedule-container {
+  padding: 24px;
+}
+
+.schedule-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 16px;
+}
+
+.schedule-description {
+  margin-bottom: 16px;
+  color: #333;
+}
+
+.calendar-wrapper {
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+
+.admin-tools {
+  margin-top: 16px;
+}

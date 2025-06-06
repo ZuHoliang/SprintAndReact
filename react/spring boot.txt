@@ -1,0 +1,1341 @@
+/**src/main/java/com/example/demo/config
+/DataInitializer.java**/
+package com.example.demo.config;
+
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Component;
+
+import com.example.demo.model.enums.UserRole;
+import com.example.demo.service.UserService;
+
+//建立初始化測試帳號
+@Component
+public class DataInitializer implements CommandLineRunner {
+	
+	private final UserService userService;
+	
+	public DataInitializer(UserService userService) {
+		this.userService = userService;
+	}
+	
+	@Override
+	public void run(String... args) throws Exception {
+		if(userService.getUser("0000") == null){
+			userService.addUser("測試管理者", "Admin123", UserRole.ADMIN, true);
+		}
+		if(userService.getUser("0001") == null) {
+			userService.addUser("測試使用者", "User123", UserRole.USER, true);
+		}
+		
+		System.out.println("初始化帳號建立完成");
+	}
+
+}
+
+/**src/main/java/com/example/demo/config
+/ModelMapperConfig.java**/
+package com.example.demo.config;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration // Springboot 啟動完成前會先執行此配置
+public class ModelMapperConfig {
+	// Springboot 會自動建立此物件並管理
+	// 其他程式可以透過 @Autowired 來取得該實體物件
+	@Bean
+	ModelMapper modelMapper() {
+		return new ModelMapper();
+	}
+}
+
+/**src/main/java/com/example/demo/config
+/WebConfig.java**/
+package com.example.demo.config;
+
+import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+@Configurable
+public class WebConfig {
+	
+	public WebMvcConfigurer corsConfigurer() {
+		return new WebMvcConfigurer() {
+			@Override
+			public void addCorsMappings(CorsRegistry registry) {
+				registry.addMapping("/**") 
+                .allowedOrigins("http://localhost:5173")
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                .allowCredentials(true)
+                .allowedHeaders("*");
+			}
+		};
+	}
+
+}
+
+/**src/main/java/com/example/demo/controller
+/AdminController.java**/
+package com.example.demo.controller;
+
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/api/admin")
+@PreAuthorize("hasRole('ADMIN')")
+@CrossOrigin(origins = {"http://localhost:5173", "http://localhost:8008"}, allowCredentials = "true")
+public class AdminController extends BaseUserController {
+	
+	//編輯公告
+	@GetMapping("/announcements/edit") 
+	public String editAnnouncements() {
+		return "EditAnnouncements";
+	}
+	
+	//申請帳號
+	@GetMapping("/accounts/create")
+	public String creatAccount() {
+		return "CreatAccount";
+	}
+	
+	//調整班表
+	@GetMapping("/schedule/adjust")
+	public String adjustSchedule() {
+		return "AdjustSchedule";
+	}
+	
+	//考勤查詢
+	@GetMapping("/attendance/check")
+	public String checkAttendance() {
+		return "CheckAttendance";
+	}
+
+}
+
+/**src/main/java/com/example/demo/controller
+/AnnouncementRestController.java**/
+package com.example.demo.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.demo.model.dto.AnnouncementDto;
+import com.example.demo.model.dto.AnnouncementEditDto;
+import com.example.demo.service.AnnouncementService;
+
+import jakarta.servlet.http.HttpSession;
+
+@RestController
+@RequestMapping("/api/announcements")
+@CrossOrigin(origins = {"http://localhost:5173", "http://localhost:8008"}, allowCredentials = "true")
+public class AnnouncementRestController {
+	
+	@Autowired
+	private AnnouncementService announcementService;
+	
+	//首頁(最新公告)
+	@GetMapping("/latest")
+	public List<AnnouncementDto> getLatestAnnouncements(){
+		return announcementService.getLatestAnnouncements();
+	}
+	
+	//全部公告
+	@GetMapping("")
+	public List<AnnouncementDto> getAllAnnouncements(){
+		return announcementService.getAllAnnouncements();
+	}
+	
+	//指定公告
+	@GetMapping("/{id}")
+	public AnnouncementDto getAnnouncementDetail(@PathVariable Long id) {
+		return announcementService.getAnnouncementById(id);
+	}
+	
+	//新增公告(ADMIN限定)
+	@PostMapping("/admin")
+	public AnnouncementDto createAnnouncement(@RequestBody AnnouncementEditDto dto, HttpSession session) {
+		Integer authorId = (Integer) session.getAttribute("userCert");
+		return announcementService.createAnnouncement(dto, authorId);
+	}
+	
+	//更新公告(ADMIN限定)
+	@PutMapping("/admin/{id}")
+	public AnnouncementDto updateAnnouncement(@PathVariable Long id, @RequestBody AnnouncementEditDto dto) {
+		return announcementService.updateAnnouncement(id, dto);
+	}
+	
+	//隱藏公告
+	@PutMapping("/admin/{id}/active")
+	public AnnouncementDto toggleActive(@PathVariable Long id, @RequestParam Boolean active) {
+		return announcementService.setAnnouncementActive(id, active);
+	}
+	
+	//刪除公告
+	@DeleteMapping("/admin/{id}")
+	public void deleteAnnouncement(@PathVariable Long id) {
+		announcementService.deleteAnnouncement(id);
+	}
+
+}
+
+/**src/main/java/com/example/demo/controller
+/BaseUserController.java**/
+package com.example.demo.controller;
+
+import org.springframework.web.bind.annotation.GetMapping;
+
+public abstract class BaseUserController {
+	// 班表
+	@GetMapping("/schedule")
+	public String Schedule() {
+		return "Schedule";
+	}
+
+	// 加班申請
+	@GetMapping("/overtimeapply")
+	public String OvertimeApply() {
+		return "OvertimeApply";
+	}
+
+	// 請假申請
+	@GetMapping("/leave")
+	public String Leave() {
+		return "Leave";
+	}
+
+	// 出勤(個人)
+	@GetMapping("/attendance")
+	public String Attendance() {
+		return "Attendance";
+	}
+
+	// 補簽到
+	@GetMapping("/attendancefix")
+	public String fixAttendance() {
+		return "FixAttendance";
+	}
+
+	// 修改帳號
+	public String changeAccount() {
+		return "ChangeAccount";
+	}
+
+}
+
+/**src/main/java/com/example/demo/controller
+/HomeRestController.java**/
+package com.example.demo.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.demo.model.dto.AnnouncementDto;
+import com.example.demo.model.dto.UserCert;
+import com.example.demo.response.ApiResponse;
+import com.example.demo.service.AnnouncementService;
+
+import jakarta.servlet.http.HttpSession;
+
+@RestController
+@RequestMapping("/api/home")
+@CrossOrigin(origins = {"http://localhost:5173", "http://localhost:8008"}, allowCredentials = "true")
+public class HomeRestController {
+	
+	@Autowired
+	private AnnouncementService announcementService;
+	
+	//左側公告
+	@GetMapping("/latest-announcements")
+	public List<AnnouncementDto> HomeAnnouncements(){
+		return announcementService.getLatestAnnouncements();
+	}
+	
+	//右側使用者登入資訊
+	@GetMapping("/session-user")
+	public ResponseEntity<ApiResponse<Object>> getSessionInfo(HttpSession session){
+		Object cert = session.getAttribute("userCert");
+		
+		if(cert instanceof UserCert userCert) {
+			return ResponseEntity.ok(ApiResponse.success("已登入", userCert));
+		} else {
+			return ResponseEntity.ok(ApiResponse.success("尚未登入", null));
+		}
+	}
+
+}
+
+/**src/main/java/com/example/demo/controller
+/LoginController.java**/
+package com.example.demo.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import com.example.demo.exception.CertException;
+import com.example.demo.model.dto.UserCert;
+import com.example.demo.service.CertService;
+
+import jakarta.servlet.http.HttpSession;
+
+@Controller
+@RequestMapping("/login")
+
+public class LoginController {
+	
+	@Autowired
+	private CertService certService;
+	
+	@GetMapping
+	public String loginPage() {
+		return "login";
+	}
+	//timeStamp
+	@PostMapping
+	public String checkLogin(@RequestParam String accountId, @RequestParam String password,
+							 Model model, HttpSession session) {
+		UserCert userCert = null; //取得憑證
+		
+		try {
+			userCert = certService.getCert(accountId, password);			
+		} catch (CertException e) {
+			session.invalidate();
+			// 將錯誤資料丟給 error.jsp
+			model.addAttribute("message", e.getMessage());
+			e.printStackTrace();
+			return "error";
+		}
+		
+		// 將憑證放到session中,讓其他程式進行取用與驗證
+		session.setAttribute("userCert", userCert);
+		return "redirect:/"; // 重導到首頁
+	}
+	
+	
+
+}
+
+/**src/main/java/com/example/demo/controller
+/LoginRestController.java**/
+package com.example.demo.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.demo.exception.CertException;
+import com.example.demo.model.dto.UserCert;
+import com.example.demo.response.ApiResponse;
+import com.example.demo.service.CertService;
+
+import jakarta.servlet.http.HttpSession;
+
+@RestController
+@RequestMapping("/api/auth")
+@CrossOrigin(origins = { "http://localhost:5173", "http://localhost:8008" }, allowCredentials = "true")
+public class LoginRestController {
+
+	@Autowired
+	private CertService certService;
+
+	@PostMapping("/login")
+	public ResponseEntity<ApiResponse<Void>> login(@RequestParam String accountId, @RequestParam String password,
+			HttpSession session) {
+		try {
+			UserCert cert = certService.getCert(accountId, password);
+			session.setAttribute("userCert", cert);
+			return ResponseEntity.ok(ApiResponse.success("登入成功", null));
+		} catch (CertException e) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+					.body(ApiResponse.error(401, "登入失敗: " + e.getMessage()));
+		}
+	}
+
+	@PostMapping("/logout")
+	public ResponseEntity<ApiResponse<Void>> logout(HttpSession session) {
+		if (session.getAttribute("userCert") == null) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.error(401, "登出失敗:未登入"));
+		}
+		session.invalidate();
+		return ResponseEntity.ok(ApiResponse.success("登出成功", null));
+	}
+	
+	
+	//檢查登入狀態
+	@GetMapping("/check") 
+	public ResponseEntity<ApiResponse<UserCert>> checkLogin(HttpSession session) {
+		UserCert userCert = (UserCert) session.getAttribute("userCert");
+		if (userCert != null) {
+			return ResponseEntity.ok(ApiResponse.success("已登入", userCert));
+		} else {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.error(401, "未登入"));
+		}
+	}
+
+}
+
+/**src/main/java/com/example/demo/controller
+/UserController.java**/
+package com.example.demo.controller;
+
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/api/user")
+@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+@CrossOrigin(origins = {"http://localhost:5173", "http://localhost:8008"}, allowCredentials = "true")
+public class UserController extends BaseUserController{
+	
+}
+
+/**src/main/java/com/example/demo/exception
+/AccountDisabledException.java**/
+package com.example.demo.exception;
+
+public class AccountDisabledException extends CertException{
+	public AccountDisabledException(String message) {
+		super(message);
+	}
+
+}
+
+
+/**src/main/java/com/example/demo/exception
+/AnnouncementNoFoundException.java**/
+package com.example.demo.exception;
+
+public class AnnouncementNoFoundException extends RuntimeException{
+	public AnnouncementNoFoundException(String message) {
+		super(message);
+	}
+
+}
+
+/**src/main/java/com/example/demo/filter
+/LoginFilter.java**/
+package com.example.demo.filter;
+
+import java.io.IOException;
+
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebFilter;
+import jakarta.servlet.http.HttpFilter;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+
+@WebFilter(urlPatterns = {"", ""}) //需要登入才能訪問的網頁
+public class LoginFilter extends HttpFilter {
+	
+	@Override
+	protected void doFilter(HttpServletRequest request,HttpServletResponse response, FilterChain chain)
+			throws IOException, ServletException {
+		//檢查session中是否有userCert
+		HttpSession session = request.getSession();
+		if(session.getAttribute("userCert") == null) {
+			response.sendRedirect("/login"); //重導回登入頁
+			return;
+		}
+		//有userCert則通過
+		chain.doFilter(request, response);
+	}
+
+}
+
+/**src/main/java/com/example/demo/mapper
+/AnnouncementMapper.java**/
+package com.example.demo.mapper;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.example.demo.model.dto.AnnouncementDto;
+import com.example.demo.model.dto.AnnouncementEditDto;
+import com.example.demo.model.entity.Announcement;
+import com.example.demo.model.entity.User;
+import com.example.demo.repository.UserRepository;
+
+@Component
+public class AnnouncementMapper {
+	
+	@Autowired
+	private ModelMapper modelMapper;
+	@Autowired
+	private UserRepository userRepository;
+	
+	//Entity轉DTO
+	public AnnouncementDto toDto(Announcement announcement) {
+		AnnouncementDto dto = modelMapper.map(announcement, AnnouncementDto.class);
+		
+		//authorName(需要查詢User)
+		if(announcement.getAuthorId() != null) {
+			User author = userRepository.findById(announcement.getAuthorId()).orElse(null);
+			if(author != null) {
+				dto.setAuthorName(author.getUsername()); //使用username顯示名稱
+			} else {
+				dto.setAuthorName("未知用戶"); //是否要做為exception處理?
+			} 
+		} else {
+				dto.setAuthorName("系統發布"); //系統發布
+			}
+		return dto;
+		}
+	
+	//DTO轉Entity
+	public Announcement toEntity(AnnouncementDto dto) {
+		
+		Announcement announcement = modelMapper.map(dto, Announcement.class);
+		
+		//創建時自動設定
+		announcement.setAnnouncementId(null);
+		announcement.setCreatedTime(null);
+		announcement.setUpdateTime(null);
+		announcement.setAuthorId(null);
+		
+		//設定預設值
+		if (announcement.getAnnouncementActive() == null) {
+			announcement.setAnnouncementActive(true);
+		}
+		return announcement;
+	}
+	//AnnouncementEdit Dto 轉 Entity
+	public Announcement toEntity(AnnouncementEditDto editDto) {
+		Announcement announcement = new Announcement();
+		announcement.setTitle(editDto.getTitle());
+		announcement.setContent(editDto.getContent());
+		announcement.setAnnouncementActive(true);
+		
+		return announcement;
+	}
+	
+	
+	//Entity List 轉換到 DTO List
+	
+	public List<AnnouncementDto> toDtoList(List<Announcement> announcements){
+		return announcements.stream()
+							.map(this::toDto)
+							.collect(Collectors.toList());
+	}
+	
+	//更新時保留訊息
+	public void updateEntityFromDto(AnnouncementDto dto, Announcement targetAnnouncement) {
+		//更新時修改欄位
+		targetAnnouncement.setTitle(dto.getTitle());
+		targetAnnouncement.setContent(dto.getContent());
+	 // targetAnnouncement.setAuthorId() 作者暫不改變
+	}
+	
+}
+
+/**src/main/java/com/example/demo/mapper
+/UserMapper.java**/
+package com.example.demo.mapper;
+
+
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.example.demo.model.dto.UserDto;
+import com.example.demo.model.entity.User;
+
+@Component
+public class UserMapper {
+	
+	@Autowired
+	private ModelMapper modelMapper;
+	
+	//Entity轉DTO
+	public UserDto toDto(User user) {		
+		return modelMapper.map(user, UserDto.class);
+	}
+	
+	//DTO轉Entity
+	public User toEntity(UserDto userDto) {
+		return modelMapper.map(userDto, User.class);
+	}
+
+}
+
+/**src/main/java/com/example/demo/model/dto
+/AnnouncementDto.java**/
+package com.example.demo.model.dto;
+
+import java.time.LocalDateTime;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+
+@Data
+@ToString
+@AllArgsConstructor
+@NoArgsConstructor
+public class AnnouncementDto {
+	
+	private Long announcementId; 
+	private String title;
+	private String content;
+	private String authorName; //通過authorId查詢Users
+	private LocalDateTime createdTime;
+	private LocalDateTime updateTime;
+	private Boolean announcementActive;
+
+}
+
+
+
+/**src/main/java/com/example/demo/model/dto
+/AnnouncementEditDto.java**/
+package com.example.demo.model.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+
+@Data
+@ToString
+@AllArgsConstructor
+@NoArgsConstructor
+public class AnnouncementEditDto {
+	private String title;
+	private String content;
+	private Boolean announcementActive;
+	//作者暫不更改
+}
+
+/**src/main/java/com/example/demo/model/dto
+/UserCert.java**/
+package com.example.demo.model.dto;
+
+import com.example.demo.model.enums.UserRole;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@ToString
+public class UserCert {
+	private Integer userId;
+	private String accountId; 	//帳號
+	private String username;	//名稱
+	private UserRole role;		//權限
+
+}
+
+/**src/main/java/com/example/demo/model/dto
+/UserDto.java**/
+package com.example.demo.model.dto;
+
+import com.example.demo.model.enums.UserRole;
+
+import lombok.Data;
+import lombok.ToString;
+
+@Data
+@ToString
+public class UserDto {
+	private Integer userId;
+	private String accountId;
+	private String userName;
+	private UserRole role;
+	private Boolean active;
+//	private String email;
+
+}
+
+/**src/main/java/com/example/demo/model/entity
+/Announcement.java**/
+package com.example.demo.model.entity;
+
+import java.time.LocalDateTime;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "announcements")
+public class Announcement {
+	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long announcementId;
+	
+	@Column(nullable = false)
+	private String title;
+	
+	@Column(columnDefinition = "TEXT", nullable = false)
+	private String content;
+	
+	@Column(nullable = false)
+	private LocalDateTime createdTime;
+	
+	@Column(nullable = false)
+	private LocalDateTime updateTime;
+	
+	@Column(name = "author_id", nullable = true)//可讓系統自動發布
+	private Integer authorId;
+	
+	@Column(name = "announcement_active")
+	private Boolean announcementActive;
+	
+	@PrePersist
+	protected void onCreate() {
+		createdTime = LocalDateTime.now();
+		updateTime = LocalDateTime.now();
+	}
+	
+	@PreUpdate
+	protected void onUpdate() {
+		updateTime = LocalDateTime.now();
+	}
+	
+
+}
+
+/**src/main/java/com/example/demo/model/entity
+/User.java**/
+package com.example.demo.model.entity;
+
+import com.example.demo.model.enums.UserRole;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity //(建立資料表)
+@Table(name = "users") //資料表命名
+public class User {
+	
+	@Id//主鍵
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "user_id")
+	private Integer userId;
+	
+	@Column(name = "account_id", unique = true, nullable = false)
+	private String accountId;
+	
+	@Column(name = "username", unique = false, nullable = false)
+	private String username;
+	
+	@Column(name = "password_hash", unique = false, nullable = false)
+	private String passwordHash;
+	
+	@Column(name = "salt", unique = false, nullable = false)
+	private String salt;
+	
+	@Enumerated(EnumType.STRING)
+	@Column(name = "role")
+	private UserRole role;
+	
+	@Column(name = "active")
+	private Boolean active;
+	
+//	@Column(name = "email", nullable = true)
+//	private String email;
+
+
+}
+
+/**src/main/java/com/example/demo/model/enums
+/UserRole.java**/
+package com.example.demo.model.enums;
+
+public enum UserRole {
+	USER,
+	ADMIN,
+	
+}
+
+/**src/main/java/com/example/demo/repository
+/AnnouncementRepository.java**/
+package com.example.demo.repository;
+
+import java.util.List;
+
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import com.example.demo.model.entity.Announcement;
+
+@Repository
+public interface AnnouncementRepository extends JpaRepository<Announcement, Long>{
+	
+	//所有公告(可分頁)
+	List<Announcement> findAllByOrderByCreatedTimeDesc(Pageable pageable);
+	
+	//限制查詢公告數量
+    List<Announcement> findTop5ByAnnouncementActiveTrueOrderByCreatedTimeDesc();
+    
+    //所有啟用公告
+    List<Announcement> findByAnnouncementActiveTrueOrderByCreatedTimeDesc();    
+    
+}
+
+/**src/main/java/com/example/demo/repository
+/UserRepository.java**/
+package com.example.demo.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
+
+import com.example.demo.model.entity.User;
+
+@Repository
+public interface UserRepository extends JpaRepository<User, Integer>{
+	@Query(value = "select user_id, account_id, username, password_hash, salt, active, role from users where account_id=:accountId", nativeQuery = true)
+	User getUser(String accountId);
+	
+	@Query("SELECT MAX(u.accountId) FROM User u")
+    String findMaxAccountId();
+}
+
+/**src/main/java/com/example/demo/response
+/ApiResponse.java**/
+package com.example.demo.response;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+// 建立 Server 與 Client 在傳遞資料上的統一結構與標準(含錯誤)
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class ApiResponse<T> {
+	private int status;     // 狀態 例如: 200, 400
+	private String message; // 訊息 例如: 查詢成功, 新增成功, 請求錯誤
+	private T data; 	    // payload 實際資料
+	
+	// 成功回應
+	public static <T> ApiResponse<T> success(String message, T data) {
+		return new ApiResponse<T>(200, message, data);
+	}
+	
+	// 失敗回應
+	public static <T> ApiResponse<T> error(int status, String message) {
+		return new ApiResponse<T>(status, message, null);
+	}
+}
+
+/**src/main/java/com/example/demo/service/impl
+/AnnouncementServiceImpl.java**/
+package com.example.demo.service.impl;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.example.demo.exception.AnnouncementNoFoundException;
+import com.example.demo.mapper.AnnouncementMapper;
+import com.example.demo.model.dto.AnnouncementDto;
+import com.example.demo.model.dto.AnnouncementEditDto;
+import com.example.demo.model.entity.Announcement;
+import com.example.demo.repository.AnnouncementRepository;
+import com.example.demo.service.AnnouncementService;
+
+@Service
+public class AnnouncementServiceImpl implements AnnouncementService{
+	
+	@Autowired
+	private AnnouncementRepository announcementRepository;
+	
+	@Autowired
+	private AnnouncementMapper announcementMapper;
+	
+	@Override
+	public List<AnnouncementDto> getLatestAnnouncements() {
+		List<Announcement> latest = announcementRepository.findTop5ByAnnouncementActiveTrueOrderByCreatedTimeDesc();
+		return announcementMapper.toDtoList(latest);
+	}
+	
+	@Override
+	public AnnouncementDto createAnnouncement(AnnouncementEditDto dto, Integer authorId) {
+		Announcement entity = announcementMapper.toEntity(dto);
+		entity.setAuthorId(authorId);
+		Announcement saved = announcementRepository.save(entity);
+		return announcementMapper.toDto(saved);
+	}
+	
+	
+	@Override
+	public List<AnnouncementDto> getAllAnnouncements() {
+		List<Announcement> all = announcementRepository.findByAnnouncementActiveTrueOrderByCreatedTimeDesc();
+		return announcementMapper.toDtoList(all);
+	}
+	
+	@Override
+	public AnnouncementDto getAnnouncementById(Long id) {
+		Announcement announcement = announcementRepository.findById(id)
+									.orElseThrow(() -> new AnnouncementNoFoundException("找不到公告:ID="+id));
+		return announcementMapper.toDto(announcement);												  
+	}
+	
+	
+	@Override
+	public AnnouncementDto updateAnnouncement(Long id, AnnouncementEditDto dto) {
+		Announcement existing = announcementRepository.findById(id)
+								.orElseThrow(() -> new AnnouncementNoFoundException("找不到要更新的公告:ID="+id));
+		existing.setTitle(dto.getTitle());
+		existing.setContent(dto.getContent());
+		Announcement update = announcementRepository.save(existing);
+		return announcementMapper.toDto(update);
+	}
+	
+	@Override
+	public AnnouncementDto setAnnouncementActive(Long id, Boolean active) {
+		Announcement announcement = announcementRepository.findById(id)
+									.orElseThrow(() -> new AnnouncementNoFoundException("找不到公告:ID="+id));
+		announcement.setAnnouncementActive(active);
+		Announcement update = announcementRepository.save(announcement);
+		return announcementMapper.toDto(update);
+	}
+	
+	@Override
+	public void deleteAnnouncement(Long id) {
+		if(!announcementRepository.existsById(id)) {
+			throw new AnnouncementNoFoundException("找不到要刪除的公告:ID="+id);
+		}
+	}
+
+}
+
+/**src/main/java/com/example/demo/service/impl
+/CertServiceImpl.java**/
+package com.example.demo.service.impl;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.example.demo.exception.AccountDisabledException;
+import com.example.demo.exception.PasswordInvalidException;
+import com.example.demo.exception.UserNotFoundException;
+import com.example.demo.model.dto.UserCert;
+import com.example.demo.model.entity.User;
+import com.example.demo.repository.UserRepository;
+import com.example.demo.service.CertService;
+import com.example.demo.util.Hash;
+
+@Service
+public class CertServiceImpl implements CertService{
+	
+	@Autowired
+	private UserRepository userRepository;
+	
+	@Override
+	public UserCert getCert(String accountId, String password) 
+			throws UserNotFoundException, PasswordInvalidException, AccountDisabledException {
+		//檢查帳號
+		User user = userRepository.getUser(accountId);
+		if(user == null) {
+			throw new UserNotFoundException("帳號錯誤");
+		}
+		// 2. 密碼 hash 比對
+		String passwordHash = Hash.getPasswordHash(password, user.getSalt());
+		if(!passwordHash.equals(user.getPasswordHash())) {
+			throw new PasswordInvalidException("密碼錯誤");
+		}
+		
+		// 3.檢查帳號是否啟用
+		if(user.getActive()!=null && !user.getActive()) {
+			throw new AccountDisabledException("帳號已停用");
+		}
+		
+		// 4. 簽發憑證
+		UserCert userCert = new UserCert(user.getUserId(), user.getAccountId(), user.getUsername(), user.getRole());
+		return userCert;
+	}
+
+}
+
+/**src/main/java/com/example/demo/service/impl
+/UserServiceImpl.java**/
+package com.example.demo.service.impl;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.example.demo.mapper.UserMapper;
+import com.example.demo.model.dto.UserDto;
+import com.example.demo.model.entity.User;
+import com.example.demo.model.enums.UserRole;
+import com.example.demo.repository.UserRepository;
+import com.example.demo.service.UserService;
+import com.example.demo.util.Hash;
+
+@Service
+public class UserServiceImpl implements UserService{
+	
+	@Autowired
+	private UserRepository userRepository;
+	
+	@Autowired
+	private UserMapper userMapper;
+	
+	@Override
+	public UserDto getUser(String accountId) {
+		User user = userRepository.getUser(accountId);
+		if(user == null) {
+			return null;
+		}
+		return userMapper.toDto(user);
+	}
+	
+	public void addUser(String username, String password, UserRole role, Boolean active) {
+		String maxAccountId = userRepository.findMaxAccountId(); //取得目前最大accountId
+		
+		//第一筆
+		int nextId = 0;
+		if(maxAccountId != null) {
+			try {
+				nextId = Integer.parseInt(maxAccountId) + 1;
+			} catch (NumberFormatException e) {
+				e.printStackTrace();
+				nextId = 0;
+			}
+		}
+		
+		String accountId = String.format("%04d", nextId);
+		
+		String salt = Hash.getSalt();
+		String passwordHash = Hash.getPasswordHash(password,salt);
+		User user = new User(null, accountId, username, passwordHash, salt, role, active);
+		userRepository.save(user);
+	}
+
+}
+
+/**src/main/java/com/example/demo/service
+/AnnouncementService.java**/
+package com.example.demo.service;
+
+import java.util.List;
+
+import com.example.demo.model.dto.AnnouncementDto;
+import com.example.demo.model.dto.AnnouncementEditDto;
+
+public interface AnnouncementService {
+	
+	List<AnnouncementDto> getLatestAnnouncements();
+	
+	List<AnnouncementDto> getAllAnnouncements();
+	
+	AnnouncementDto getAnnouncementById(Long id);
+
+    AnnouncementDto createAnnouncement(AnnouncementEditDto dto, Integer authorId);
+
+    AnnouncementDto updateAnnouncement(Long id, AnnouncementEditDto dto);
+    
+    AnnouncementDto setAnnouncementActive(Long id, Boolean active);
+    
+    void deleteAnnouncement(Long id);
+
+}
+
+/**src/main/java/com/example/demo/service
+/CertService.java**/
+package com.example.demo.service;
+
+import com.example.demo.exception.CertException;
+import com.example.demo.model.dto.UserCert;
+
+public interface CertService {
+	UserCert getCert(String accountId, String password) throws CertException;
+
+}
+
+/**src/main/java/com/example/demo/service
+/UserService.java**/
+package com.example.demo.service;
+
+import com.example.demo.model.dto.UserDto;
+import com.example.demo.model.enums.UserRole;
+
+public interface UserService {
+	public UserDto getUser(String accountId);
+	public void addUser(String userName, String password, UserRole role, Boolean active);
+	
+	
+
+}
+
+/**src/main/java/com/example/demo
+/SpringbootMyprojectApplication.java**/
+package com.example.demo;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.servlet.ServletComponentScan;
+
+
+@ServletComponentScan //啟用WebFilter掃描
+@SpringBootApplication
+public class SpringbootMyprojectApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(SpringbootMyprojectApplication.class, args);
+	}
+
+}
+
+/**src/main/resources
+/application.properties**/
+# 基本配置
+spring.application.name=springboot-myproject
+server.port=8088
+
+## jsp 配置
+#spring.mvc.view.prefix=/WEB-INF/view/
+#spring.mvc.view.suffix=.jsp
+
+# 啟用 hiddenmethod filter
+spring.mvc.hiddenmethod.filter.enabled=true
+
+# mysql 配置
+spring.datasource.url=jdbc:mysql://localhost:3306/project?useSSL=false&serverTimezone=Asia/Taipei&useLegacyDatetimeCode=false&allowPublicKeyRetrieval=true
+spring.datasource.username=root
+spring.datasource.password=abc123
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+
+# JPA 配置
+# 自動更新表結構，可根據需要設置為 create, update, validate, none
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
+spring.jpa.open-in-view=false
+
+# Log 配置
+# 根日誌層級為 INFO
+logging.level.root=INFO
+# 設定日誌保存目錄和文件名稱(會在專案目錄下自動建立一個 log 資料夾與 app.log 檔案)
+logging.file.name=logs/app.log
+
+# messages.properties 配置(預設會直接找 src/main/resources)
+spring.messages.basename=messages
+spring.messages.encoding=UTF-8
+
+/**src/test/java/com/example/demo
+/SpringbootMyprojectApplicationTests.java**/
+package com.example.demo;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+@SpringBootTest
+class SpringbootMyprojectApplicationTests {
+
+	@Test
+	void contextLoads() {
+	}
+
+}
+
+/**pom.xml**/
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>3.5.0</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
+	<groupId>com.example</groupId>
+	<artifactId>springboot-myproject</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>springboot-myproject</name>
+	<description>Demo project for Spring Boot</description>
+	<url/>
+	<licenses>
+		<license/>
+	</licenses>
+	<developers>
+		<developer/>
+	</developers>
+	<scm>
+		<connection/>
+		<developerConnection/>
+		<tag/>
+		<url/>
+	</scm>
+	<properties>
+		<java.version>21</java.version>
+	</properties>
+	<dependencies>
+		
+		<!-- Model Mapper DTO 與 Entity 互轉 -->
+	    <dependency>
+	        <groupId>org.modelmapper</groupId>
+	        <artifactId>modelmapper</artifactId>
+	        <version>3.2.1</version>
+	    </dependency>
+	    
+	    <!-- 配置 jsp -->
+	    <dependency>
+	        <groupId>org.apache.tomcat.embed</groupId>
+	        <artifactId>tomcat-embed-jasper</artifactId>
+	    </dependency>
+			
+	    <!-- 配置 Jakarta Standard Tag Library (JSTL) -->
+	    <dependency>
+	        <groupId>org.glassfish.web</groupId>
+	        <artifactId>jakarta.servlet.jsp.jstl</artifactId>
+	        <version>3.0.0</version>
+	    </dependency>
+	    
+	    <!-- JdbcTemplate (JDBC 豪華昇級版)  -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jdbc</artifactId>
+		</dependency>
+		
+		<!-- JPA  -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+		
+		<!-- 驗證 Validation -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-validation</artifactId>
+		</dependency>
+		
+		<!-- 配置 Tomcat Web Server -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		
+		<!-- 使用者權限限制 -->
+		<dependency>
+   		 	<groupId>org.springframework.boot</groupId>
+    		<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+		
+		<!-- MySQL Driver -->
+		<dependency>
+			<groupId>com.mysql</groupId>
+			<artifactId>mysql-connector-j</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		
+		<!-- Lombok -->
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<optional>true</optional>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<annotationProcessorPaths>
+						<path>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+						</path>
+					</annotationProcessorPaths>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<excludes>
+						<exclude>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+						</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
+

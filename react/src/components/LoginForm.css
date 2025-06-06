@@ -1,0 +1,62 @@
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 100%;
+  max-width: 100%; 
+}
+
+/* 每組 label+input 包裝 */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* input 框 */
+.login-form input[type="text"],
+.login-form input[type="password"] {
+  padding: 10px;
+  font-size: 1rem;
+  border: 1.5px solid #ccc;
+  border-radius: 6px;
+  transition: border-color 0.3s ease;
+  width: 100%;  /* 寬度100%填滿父容器 */
+  box-sizing: border-box;
+}
+
+.login-form input[type="text"]:focus,
+.login-form input[type="password"]:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 6px #a3c4ff;
+}
+
+/* 按鈕 */
+.login-form button {
+  padding: 12px;
+  background-color: #007bff;
+  color: white;
+  font-weight: 700;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: 100%;
+}
+
+.login-form button:hover {
+  background-color: #0056b3;
+}
+
+/* checkbox 置中且間距 */
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* checkbox label 避免選取 */
+.checkbox-row label {
+  user-select: none;
+}
