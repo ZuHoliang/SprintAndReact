@@ -2,6 +2,9 @@ package com.example.demo.filter;
 
 import java.io.IOException;
 
+import com.example.demo.response.ApiResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebFilter;
@@ -11,7 +14,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 @WebFilter(urlPatterns = { "/api/*" }) // 需要登入才能訪問的網頁
-public class LoginFilter extends HttpFilter {
+public class LoginRestFilter extends HttpFilter {
 
 	private boolean isPublicEndpoint(HttpServletRequest request) {
 		String path = request.getRequestURI();
@@ -50,9 +53,18 @@ public class LoginFilter extends HttpFilter {
 		// 檢查是否登入
 		HttpSession session = request.getSession(false);
 		if (session == null || session.getAttribute("userCert") == null) {
-			response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+			
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			response.setContentType("application/json;charset=UTF-8");
+			
+			ApiResponse<?> apiResponse = ApiResponse.error(401, "請先登入");
+			
+			ObjectMapper mapper = new ObjectMapper();
+			String json = mapper.writeValueAsString(apiResponse);
+			response.getWriter().write(json);
 			return;
 		}
+
 		// 有userCert則通過
 		chain.doFilter(request, response);
 	}

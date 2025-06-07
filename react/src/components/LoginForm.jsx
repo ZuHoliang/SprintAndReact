@@ -8,10 +8,14 @@ const LoginForm = () => {
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [message, setMessage] = useState("");
+  const [accountError, setAccountError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
+    setAccountError("");
+    setPasswordError("");
 
     if (!account || !password) {
       setMessage("請輸入帳號和密碼");
@@ -20,7 +24,14 @@ const LoginForm = () => {
 
     const result = await login(account, password, rememberMe); //登入
     if (!result.success) {
-      setMessage(result.message);
+      const msg = result.message || "";
+      if (msg.includes("帳號錯誤")) {
+        setAccountError("*查無使用者");
+      } else if (msg.includes("密碼錯誤")) {
+        setPassword("*密碼錯誤");
+      } else {
+        setMessage(msg);
+      }
     }
   };
 
@@ -37,7 +48,10 @@ const LoginForm = () => {
       )}
 
       <div className="form-group">
-        <label htmlFor="account">帳號:</label>
+        <label htmlFor="account">
+          帳號:{""}
+          {accountError && <span className="field-error">{accountError}</span>}
+        </label>
         <input
           type="text"
           id="account"
@@ -48,7 +62,12 @@ const LoginForm = () => {
       </div>
 
       <div className="form-group">
-        <label htmlFor="password">密碼:</label>
+        <label htmlFor="password">
+          密碼:{""}
+          {passwordError && (
+            <span className="field-error">{passwordError}</span>
+          )}
+        </label>
         <input
           type="password"
           id="password"

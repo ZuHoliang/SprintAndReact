@@ -1,0 +1,89 @@
+.admin-user-page {
+  padding: 20px;
+  font-family: sans-serif;
+}
+
+.admin-user-layout {
+  display: flex;
+  gap: 32px;
+  margin-top: 20px;
+}
+
+.user-list,
+.user-form {
+  flex: 1;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: #f9f9f9;
+}
+
+.user-list h2,
+.user-form h2 {
+  margin-bottom: 16px;
+  font-size: 1.5rem;
+}
+
+.user-list ul {
+  list-style: none;
+  padding: 0;
+}
+
+.user-list li {
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.user-list button,
+.user-form button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  background-color: #4a90e2;
+  color: white;
+  cursor: pointer;
+}
+
+.user-form label {
+  display: block;
+  margin: 10px 0 5px;
+}
+
+.user-form input[type=\"text\"],
+.user-form input[type=\"password\"] {
+  width: 100%;
+  padding: 6px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.error {
+  color: red;
+}
+
+.user-list table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  margin-top: 10px;
+}
+
+.user-list th,
+.user-list td {
+  padding: 10px;
+  border: 1px solid #ccc;
+  text-align: center;
+}
+
+.form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.user-form button {
+  margin-top: 12px;
+  background-color: #4caf50;
+}

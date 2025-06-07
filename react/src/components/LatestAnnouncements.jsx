@@ -52,7 +52,7 @@ const LatestAnnouncements = () => {
               <li key={item.announcementId}>
                 <strong>{item.title}</strong>
                 <br />
-                <small>{new Date(item.createdTime).toLocaleDateString}</small>
+                <small>{new Date(item.createdTime).toLocaleDateString()}</small>
               </li>
             ))}
           </ul>

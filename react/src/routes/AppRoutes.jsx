@@ -2,6 +2,8 @@ import { Route, Routes } from "react-router-dom";
 import Home from "../pages/homePage/Home";
 import Announcements from "../pages/announcementsPage/Announcements";
 import Profile from "../pages/profilePage/Profile";
+import ManageAccount from "../pages/manageAccountPage/ManageAccount";
+import Schedule from "../pages/schedulePage/Schedule";
 import ErrorPage from "../pages/errorPage/Error";
 
 const AppRoutes = () => (
@@ -9,6 +11,8 @@ const AppRoutes = () => (
     <Route path="/" element={<Home />} />
     <Route path="/announcements" element={<Announcements />} />
     <Route path="/profile" element={<Profile />} />
+    <Route path="/manageaccount" element={<ManageAccount />} />
+    <Route path="/schedule" element={<Schedule />} />
 
     <Route path="*" element={<ErrorPage status={404} message="找不到網頁" />} />
   </Routes>

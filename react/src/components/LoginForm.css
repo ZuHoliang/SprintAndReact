@@ -3,7 +3,7 @@
   flex-direction: column;
   gap: 15px;
   width: 100%;
-  max-width: 100%; 
+  max-width: 100%;
 }
 
 /* 每組 label+input 包裝 */
@@ -21,7 +21,7 @@
   border: 1.5px solid #ccc;
   border-radius: 6px;
   transition: border-color 0.3s ease;
-  width: 100%;  /* 寬度100%填滿父容器 */
+  width: 100%; /* 寬度100%填滿父容器 */
   box-sizing: border-box;
 }
 
@@ -59,4 +59,18 @@
 /* checkbox label 避免選取 */
 .checkbox-row label {
   user-select: none;
+}
+
+.message.success {
+  color: green;
+}
+
+.message.error {
+  color: red;
+}
+
+.field-error {
+  color: red;
+  font-size: 0.9rem;
+  margin-left: 4px;
 }

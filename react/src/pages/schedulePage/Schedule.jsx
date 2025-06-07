@@ -2,11 +2,11 @@ import React, { useContext } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
 import NavButton from "../../components/NavButton";
 import Calendar from "../../components/Calendar";
-import HomeButton from "../components/HomeButton";
+import HomeButton from "../../components/HomeButton";
 
 const Schedule = () => {
   const { user } = useContext(AuthContext);
-  const isAdmin = user?.role === "admin";
+  const isAdmin = user?.role === "2";
 
   return (
     <div className="schedule-container">
