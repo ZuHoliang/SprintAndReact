@@ -10,18 +10,19 @@ const AnnouncementAdminPage = () => {
   const [editingData, setEditingData] = useState(null);
   const [isCreating, setIsCreating] = useState(false);
 
+  const fetchAnnouncements = async () => {
+    try {
+      const res = await fetch(`${API_BASE}`);
+      if (!res.ok) throw new Error("載入失敗");
+      const data = await res.json();
+      setAnnouncements(data);
+    } catch (err) {
+      console.error("公告載入錯誤：", err);
+      alert("無法載入公告資料");
+    }
+  };
+
   useEffect(() => {
-    const fetchAnnouncements = async () => {
-      try {
-        const res = await fetch(`${API_BASE}`);
-        if (!res.ok) throw new Error("載入失敗");
-        const data = await res.json();
-        setAnnouncements(data);
-      } catch (err) {
-        console.error("公告載入錯誤：", err);
-        alert("無法載入公告資料");
-      }
-    };
     fetchAnnouncements();
   }, []);
 
@@ -43,7 +44,7 @@ const AnnouncementAdminPage = () => {
 
         if (!res.ok) throw new Error("刪除失敗");
 
-        setAnnouncements((prev) => prev.filter((a) => a.announcementId !== id));
+        await fetchAnnouncements();
       } catch (err) {
         console.error("刪除公告失敗：", err);
         alert("刪除公告時發生錯誤");
@@ -53,7 +54,7 @@ const AnnouncementAdminPage = () => {
 
   //新增或編輯送出
   const handleFormSubmit = async (data) => {
-    const url = editId ? `${API_BASE}/admin/${editId}` : `${API_BASE}/admin/`;
+    const url = editId ? `${API_BASE}/admin/${editId}` : `${API_BASE}/admin`;
     const method = editId ? "PUT" : "POST";
 
     try {
@@ -61,23 +62,32 @@ const AnnouncementAdminPage = () => {
         method,
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ title: data.title, content: data.content }),
       });
 
       if (!response.ok) {
         throw new Error("伺服器錯誤!");
       }
 
-      const newItem = await response.json();
+      await fetchAnnouncements();
 
-      if (editId) {
-        setAnnouncements((prev) =>
-          prev.map((a) =>
-            a.announcementId === newItem.announcementId ? newItem : a
-          )
+      let newItem = await response.json();
+
+      //更新公告
+      if (
+        editId &&
+        editingData &&
+        editingData.announcementActive !== data.announcementActive
+      ) {
+        const activeChage = await fetch(
+          `${API_BASE}/admin/${editId}/active?active=${data.announcementActive}`,
+          {
+            method: "PUT",
+            credentials: "include",
+          }
         );
-      } else {
-        setAnnouncements((prev) => [newItem, ...prev]);
+        if (!activeChage.ok) throw new Error("更新公告失敗");
+        newItem = await activeChage.json();
       }
 
       resetForm();

@@ -8,13 +8,17 @@ const AnnouncementForm = ({ initialData, onSubmit, mode }) => {
   const [active, setActive] = useState(
     data.announcementActive === undefined ? true : data.announcementActive
   );
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (title.trim().length < 3) {
       alert("標題至少需要 3 個字");
       return;
     }
-    onSubmit({ title, content, announcementActive: active });
+    try {
+      await onSearch(keyword, startDate, endDate);
+    } finally {
+      setIsSearching(false);
+    }
   };
   return (
     <form className="announcement-form" onSubmit={handleSubmit}>
