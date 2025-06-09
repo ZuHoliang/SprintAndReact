@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import "./AnnouncementForm.css";
 
-const AnnouncementForm = (props) => {
-  // 【修改】確保 initialData 不會是 null 或 undefined
-  const initialData = props.initialData ?? {};
-  const [title, setTitle] = useState(initialData.title || "");
-  const [content, setContent] = useState(initialData.content || "");
-  const [active, setActive] = useState(initialData.announcementActive ?? true);
-
+const AnnouncementForm = ({ initialData, onSubmit, mode }) => {
+  const data = initialData || {};
+  const [title, setTitle] = useState(data.title || "");
+  const [content, setContent] = useState(data.content || "");
+  const [active, setActive] = useState(
+    data.announcementActive === undefined ? true : data.announcementActive
+  );
   const handleSubmit = (e) => {
     e.preventDefault();
     if (title.trim().length < 3) {

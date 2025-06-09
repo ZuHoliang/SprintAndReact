@@ -106,7 +106,7 @@ const AnnouncementAdminPage = () => {
       {/* 顯示表單 */}
       {(isCreating || editId) && (
         <AnnouncementForm
-          initialData={editingData}
+          initialData={editingData || {}}
           mode={editId ? "edit" : "create"}
           onSubmit={handleFormSubmit}
         />
