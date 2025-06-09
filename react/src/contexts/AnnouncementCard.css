@@ -1,0 +1,45 @@
+.announcement-card {
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 16px;
+  background-color: #f9f9f9;
+  cursor: pointer;
+  transition: box-shadow 0.2s ease-in-out;
+}
+
+.announcement-card:hover {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+}
+
+.announcement-card h3 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.announcement-card p {
+  margin: 0.25rem 0;
+  color: #555;
+  font-size: 0.95rem;
+}
+
+@media (max-width: 600px) {
+  .announcement-search-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .announcement-search-form input,
+  .announcement-search-form button {
+    width: 100%;
+  }
+
+  .announcement-card {
+    padding: 12px;
+  }
+
+  .announcement-page {
+    padding: 10px;
+  }
+}

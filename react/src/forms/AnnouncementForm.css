@@ -1,0 +1,85 @@
+.announcement-form {
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.announcement-form h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.announcement-form label {
+  display: block;
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+.announcement-form input[type="text"],
+.announcement-form textarea {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  box-sizing: border-box;
+}
+
+.announcement-form textarea {
+  height: 150px;
+  resize: vertical;
+}
+
+.announcement-form button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  display: block;
+  width: 100%;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.announcement-form button:hover {
+  background-color: #0056b3;
+}
+
+@media (max-width: 768px) {
+  .announcement-form,
+  .announcement-detail,
+  .admin-page {
+    padding: 10px;
+  }
+
+  .announcement-form h2,
+  .admin-page h1 {
+    font-size: 1.5rem;
+    text-align: center;
+  }
+
+  .announcement-list li {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .announcement-list li div {
+    width: 100%;
+    justify-content: flex-start;
+    margin-top: 10px;
+    gap: 10px;
+  }
+
+  .announcement-form button,
+  .admin-page button {
+    font-size: 1rem;
+    padding: 8px;
+  }
+
+  .announcement-form input[type="text"],
+  .announcement-form textarea {
+    font-size: 1rem;
+  }
+}

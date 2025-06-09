@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
 import NavButton from "../../components/NavButton";
-import LoginForm from "../../components/LoginForm";
+import LoginForm from "../../forms/LoginForm";
 import LatestAnnouncements from "../../components/LatestAnnouncements";
 import "./Home.css";
 

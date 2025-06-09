@@ -23,6 +23,10 @@ const AuthProvider = ({ children }) => {
         if (data.status === 200 && data) {
           setUser(data.data);
         }
+         else {
+  // 未登入也當成成功，但 user 為 null
+  setUser(null);
+}
       }
     } catch (error) {
       console.error("檢查登入狀態失敗:", error);
@@ -50,7 +54,7 @@ const AuthProvider = ({ children }) => {
         setUser(data.data);
         return { success: true, message: data.message };
       } else {
-        return { success: false, message: data.message || "登入失敗" };
+        return { success: false, message: data.message || "登入失敗" ,errorCode: data.errorCode || null,};
       }
     } catch (error) {
       console.error("登入錯誤", error);

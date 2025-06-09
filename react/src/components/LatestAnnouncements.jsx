@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "./LatestAnnouncements.css";
 
 const API_BASE = "http://localhost:8088/api";
 
 const LatestAnnouncements = () => {
   const [announcements, setAnnouncements] = useState([]);
-  const [loading, setLoading] = useState(false); //** */
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchLatest = async () => {
@@ -37,9 +38,12 @@ const LatestAnnouncements = () => {
   return (
     <div className="announcement-panel">
       <div className="panel-header">
-        <Link to="/announcements" className="announcement-title-button">
+        <button
+          className="announcement-title-button"
+          onClick={() => navigate("/announcements")}
+        >
           最新公告
-        </Link>
+        </button>
       </div>
       <div className="panel-body">
         {loading ? (
@@ -49,7 +53,10 @@ const LatestAnnouncements = () => {
         ) : (
           <ul className="announcement-list">
             {announcements.map((item) => (
-              <li key={item.announcementId}>
+              <li
+                key={item.announcementId}
+                onClick={() => navigate(`/announcement/${item.announcementId}`)}
+              >
                 <strong>{item.title}</strong>
                 <br />
                 <small>{new Date(item.createdTime).toLocaleDateString()}</small>
@@ -61,5 +68,4 @@ const LatestAnnouncements = () => {
     </div>
   );
 };
-
 export default LatestAnnouncements;

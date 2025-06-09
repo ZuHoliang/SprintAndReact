@@ -1,0 +1,95 @@
+.admin-page {
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.admin-page h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.admin-page button {
+  padding: 8px 16px;
+  margin: 10px 0;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.admin-page button:hover {
+  background-color: #218838;
+}
+
+.announcement-list {
+  list-style: none;
+  padding: 0;
+}
+
+.announcement-list li {
+  background: #f1f1f1;
+  padding: 15px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+}
+
+.announcement-list li div {
+  margin-top: 10px;
+}
+
+.announcement-list button {
+  margin-right: 10px;
+  padding: 5px 10px;
+  background-color: #ffc107;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.announcement-list button:last-child {
+  background-color: #dc3545;
+  color: white;
+}
+
+.announcement-list button:hover {
+  opacity: 0.85;
+}
+
+@media (max-width: 768px) {
+  .announcement-form,
+  .announcement-detail,
+  .admin-page {
+    padding: 10px;
+  }
+
+  .announcement-form h2,
+  .admin-page h1 {
+    font-size: 1.5rem;
+    text-align: center;
+  }
+
+  .announcement-list li {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .announcement-list li div {
+    width: 100%;
+    justify-content: flex-start;
+    margin-top: 10px;
+    gap: 10px;
+  }
+
+  .announcement-form button,
+  .admin-page button {
+    font-size: 1rem;
+    padding: 8px;
+  }
+
+  .announcement-form input[type="text"],
+  .announcement-form textarea {
+    font-size: 1rem;
+  }
+}

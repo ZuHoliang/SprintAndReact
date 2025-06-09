@@ -6,7 +6,7 @@ import HomeButton from "../../components/HomeButton";
 
 const Schedule = () => {
   const { user } = useContext(AuthContext);
-  const isAdmin = user?.role === "2";
+  const isAdmin = user?.role === 2;
 
   return (
     <div className="schedule-container">
@@ -16,7 +16,7 @@ const Schedule = () => {
       {/* 識別權限 */}
       {isAdmin && (
         <div className="">
-          <NavButton to="/schedulePage/Schedule/edit" label="調整班表" />
+          <NavButton to="/schedule" label="調整班表" />
           <Calendar />
         </div>
       )}
