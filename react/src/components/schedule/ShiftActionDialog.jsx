@@ -17,6 +17,13 @@ const ShiftActionDialog = ({
   const [swapTargetId, setSwapTargetId] = useState(null);
   const [message, setMessage] = useState("");
 
+  useEffect(() => {
+    if (open) {
+      setSwapTargetId(null);
+      setMessage("");
+    }
+  }, [open, date, shiftType]);
+
   if (!open) return null;
 
   const handleAssign = () => {

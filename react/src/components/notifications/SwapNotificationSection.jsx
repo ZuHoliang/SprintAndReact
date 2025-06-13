@@ -65,7 +65,7 @@ const SwapNotificationSection = () => {
       ) : (
         receivedRequests.map((req) => (
           <SwapRequestCard
-            key={req.requestId}
+            key={req.shiftSwapId}
             request={req}
             isReceived={true}
             onReply={handleReject}
@@ -78,7 +78,7 @@ const SwapNotificationSection = () => {
       ) : (
         sentRequests.map((req) => (
           <SwapRequestCard
-            key={req.requestId}
+            key={req.shiftSwapId}
             request={req}
             isReceived={false}
             onCancel={handleCancel}

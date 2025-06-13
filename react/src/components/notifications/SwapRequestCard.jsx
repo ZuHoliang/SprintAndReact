@@ -8,13 +8,13 @@ const SwapRequestCard = ({ request, isReceived, onReply, onCancel }) => {
 
   //送出同意
   const handleApprove = (message) => {
-    onReply(request.requestId, true, message);
+    onReply(request.shiftSwapId, true, message);
     setReplyOpen(false);
   };
 
   //送出拒絕
   const handleReject = (message) => {
-    onReply(request.requestId, false, message);
+    onReply(request.shiftSwapId, false, message);
     setReplyOpen(false);
   };
 
@@ -44,7 +44,9 @@ const SwapRequestCard = ({ request, isReceived, onReply, onCancel }) => {
         </div>
       ) : (
         <div className="card-actions">
-          <button onClick={() => onCancel(request.requestId)}>取消申請</button>
+          <button onClick={() => onCancel(request.shiftSwapId)}>
+            取消申請
+          </button>
         </div>
       )}
 

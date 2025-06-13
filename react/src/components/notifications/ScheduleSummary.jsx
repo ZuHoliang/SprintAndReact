@@ -53,7 +53,7 @@ const ScheduleSummary = () => {
     const futureClass = isFuture(date) ? "future" : "";
     return (
       <div className={`shift ${type.toLowerCase()}${futureClass}`}>
-        {type === "MORNING" ? "早班" : "晚班"};
+        {type === "MORNING" ? "早班" : "晚班"}
       </div>
     );
   };
