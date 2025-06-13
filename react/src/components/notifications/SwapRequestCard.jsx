@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import SwapReplyDialog from "./SwapReplyDialog";
-// import "./SwapRequestCard.css";
+import "./SwapRequestCard.css";
 
 //顯示單筆換班通知
 const SwapRequestCard = ({ request, isReceived, onReply, onCancel }) => {

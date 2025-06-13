@@ -1,0 +1,53 @@
+.swap-card {
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 16px;
+  background-color: #fafafa;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease;
+}
+
+.swap-card:hover {
+  transform: scale(1.01);
+}
+
+.card-content {
+  margin-bottom: 12px;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.card-content div {
+  margin: 4px 0;
+}
+
+.card-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.card-actions button {
+  padding: 6px 12px;
+  font-size: 0.9rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  background-color: #2196f3;
+  color: white;
+  transition: background-color 0.2s ease;
+}
+
+.card-actions button:hover {
+  background-color: #1976d2;
+}
+
+/* 若要區分不同身份還可加強樣式，如以下： */
+.card-actions button.cancel {
+  background-color: #f44336;
+}
+
+.card-actions button.cancel:hover {
+  background-color: #d32f2f;
+}
