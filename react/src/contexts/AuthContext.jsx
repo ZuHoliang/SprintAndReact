@@ -38,7 +38,7 @@ const AuthProvider = ({ children }) => {
   //登入
   const login = async (accountId, password, remerberMe = false) => {
     try {
-      setLoading(true);
+      // setLoading(true);
       const formData = new FormData();
       formData.append("accountId", accountId);
       formData.append("password", password);

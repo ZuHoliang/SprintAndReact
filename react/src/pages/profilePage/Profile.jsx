@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import HomeButton from "../../components/HomeButton";
+import ScheduleSummary from "../../components/notifications/ScheduleSummary";
+import SwapNotificationSection from "../../components/notifications/SwapNotificationSection";
 import "./Profile.css";
 
 const API_BASE = "http://localhost:8088/api";
@@ -81,13 +83,18 @@ const Profile = () => {
   return (
     <div className="user-profile-container">
       <div className="left-panel">
-        <h3>通知中心(開發中...)</h3>
+        <h3>通知中心</h3>
+        <SwapNotificationSection />
       </div>
       <div className="right-panel">
         <h2>個人資訊</h2>
         <p>
           <strong>使用者名稱:{user.username}</strong>
         </p>
+        <p className="user-role">{user.role === 2 ? "管理者" : "一般員工"}</p>
+        <div>
+          <ScheduleSummary />
+        </div>
         <h3>修改個人資料</h3>
         {mode === "view" && (
           <div className="button-group">

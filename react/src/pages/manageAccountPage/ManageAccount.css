@@ -122,3 +122,10 @@
 .search-box button:hover {
   background-color: #45a049;
 }
+
+.home-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+}

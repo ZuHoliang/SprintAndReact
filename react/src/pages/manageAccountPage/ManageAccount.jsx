@@ -26,6 +26,20 @@ const ManageAccount = () => {
 
   useEffect(() => {
     fetchUsers();
+    // 清空欄位
+  setNewUser({
+    username: "",
+    password: "",
+    confirmPassword: "",
+    isAdmin: false,
+    active: true,
+  });
+  setEditData({
+    password: "",
+    confirmPassword: "",
+    role: 1,
+    active: true,
+  });
   }, []);
 
   const fetchUsers = async () => {
@@ -213,6 +227,13 @@ const ManageAccount = () => {
                             role: user.role,
                             active: user.active,
                           });
+                           setNewUser({
+    username: "",
+    password: "",
+    confirmPassword: "",
+    isAdmin: false,
+    active: true,
+  });
                         }}
                       >
                         編輯
@@ -228,7 +249,21 @@ const ManageAccount = () => {
           <div className="form-header">
             <h2>{selectedUser ? "編輯員工" : "新增員工"}</h2>
             {selectedUser && (
-              <button onClick={() => setSelectedUser(null)}>新增員工</button>
+              <button onClick={() =>{ setSelectedUser(null);
+                setNewUser({
+                  username: "",
+                  password: "",
+                  confirmPassword: "",
+                  isAdmin: false,
+                  active: true,
+                });
+                setEditData({
+                password: "",
+                confirmPassword: "",
+                role: 1,
+                active: true,
+                });
+               } }>新增員工</button>
             )}
           </div>
 
@@ -245,6 +280,8 @@ const ManageAccount = () => {
                 <label>新密碼：</label>
                 <input
                   type="password"
+                  name="password"
+                  autoComplete="new-password"
                   value={editData.password}
                   onChange={(e) =>
                     setEditData({ ...editData, password: e.target.value })
@@ -303,6 +340,8 @@ const ManageAccount = () => {
                 <label>使用者名稱：</label>
                 <input
                   type="text"
+                  name="username"
+                  autoComplete="off"
                   value={newUser.username}
                   onChange={(e) =>
                     setNewUser({ ...newUser, username: e.target.value })
@@ -314,6 +353,8 @@ const ManageAccount = () => {
                 <label>密碼：</label>
                 <input
                   type="password"
+                  name="password"
+                  autoComplete="new-password"
                   value={newUser.password}
                   onChange={(e) =>
                     setNewUser({ ...newUser, password: e.target.value })
@@ -325,6 +366,8 @@ const ManageAccount = () => {
                 <label>確認密碼：</label>
                 <input
                   type="password"
+                  name="confirmPassword"
+                  autoComplete="new-password"
                   value={newUser.confirmPassword}
                   onChange={(e) =>
                     setNewUser({ ...newUser, confirmPassword: e.target.value })

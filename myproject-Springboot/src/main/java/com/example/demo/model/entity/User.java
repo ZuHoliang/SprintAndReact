@@ -17,17 +17,18 @@ import lombok.NoArgsConstructor;
 @Table(name = "users") // 資料表命名
 public class User {
 
-	@Id // 主鍵
+	@Id // 主鍵、員工編號
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "user_id")
 	private Integer userId;
-
+	
+	//帳號
 	@Column(name = "account_id", unique = true, nullable = false)
 	private String accountId;
-
+	//使用者姓名
 	@Column(name = "username", unique = false, nullable = false)
 	private String username;
-
+	//密碼
 	@Column(name = "password_hash", unique = false, nullable = false)
 	private String passwordHash;
 

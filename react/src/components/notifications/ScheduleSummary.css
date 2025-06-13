@@ -1,0 +1,38 @@
+.schedule-summary {
+  padding: 12px;
+  background-color: #fefefe;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+}
+
+.summary-cell {
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 6px;
+  text-align: center;
+  background-color: #fff;
+}
+
+.shift {
+  font-size: 0.85rem;
+  margin-top: 4px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: white;
+}
+
+.morning {
+  background-color: #2196f3;
+}
+
+.evening {
+  background-color: #9c27b0;
+}
+
+.future {
+  filter: brightness(1.3);
+}

@@ -7,7 +7,7 @@ const AnnouncementSearchForm = ({ onSearch }) => {
   const [error, setError] = useState("");
   const [isSearching, setIsSearching] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     // 驗證：起始日期不能晚於結束日期
     if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
@@ -17,13 +17,18 @@ const AnnouncementSearchForm = ({ onSearch }) => {
     setError("");
     setIsSearching(true);
 
-    onSearch(keyword, startDate, endDate);
+    try {
+      await onSearch(keyword, startDate, endDate);
+    } finally {
+      setIsSearching(false);
+    }
   };
   const handleReset = () => {
     setKeyword("");
     setStartDate("");
     setEndDate("");
     setError("");
+    window.location.reload();
   };
 
   return (

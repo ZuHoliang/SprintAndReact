@@ -2,15 +2,13 @@ import React, { useState, useEffect, useContext } from "react";
 import AnnouncementSearchForm from "../../forms/AnnouncementSearchForm";
 import AnnouncementCard from "../../contexts/AnnouncementCard";
 import HomeButton from "../../components/HomeButton";
+import "../../forms/AnnouncementSearchForm.css";
 import "./Announcements.css";
-import { AuthContext } from "../../contexts/AuthContext";
+import "../../components/HomeButton.css";
 
 const API_BASE = "http://localhost:8088/api/announcements";
 
 const Announcements = () => {
-  const { user } = useContext(AuthContext);
-  const isAdmin = user?.role === 2;
-
   const [announcements, setAnnouncements] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -57,14 +55,6 @@ const Announcements = () => {
         announcements.map((a) => (
           <div key={a.announcementId}>
             <AnnouncementCard announcement={a} />
-            {isAdmin && (
-              <div style={{ marginBottom: "1rem" }}>
-                <button onClick={() => handleEdit(a)}>編輯</button>
-                <button onClick={() => handleDelete(a.announcementId)}>
-                  刪除
-                </button>
-              </div>
-            )}
           </div>
         ))
       )}

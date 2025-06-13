@@ -47,7 +47,7 @@ const Home = () => {
 
               {isAdmin && (
                 <>
-                  <NavButton to="/announcements" label="編輯公告" />
+                  <NavButton to="/announcements/admin" label="公告管理" />
                   <NavButton to="/manageaccount" label="管理員工" />
                 </>
               )}

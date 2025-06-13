@@ -17,6 +17,14 @@
   line-height: 1.6;
 }
 
+/* HomeButton 固定位置（右下角） */
+.home-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
 @media (max-width: 768px) {
   .announcement-form,
   .announcement-detail,

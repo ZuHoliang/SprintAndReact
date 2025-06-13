@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react";
 import AnnouncementForm from "../../forms/AnnouncementForm";
+import AnnouncementSearchForm from "../../forms/AnnouncementSearchForm";
+import HomeButton from "../../components/HomeButton";
 import "./AnnouncementAdminPage.css";
+import "../../forms/AnnouncementSearchForm.css";
+import "../../forms/AnnouncementForm.css"
 
 const API_BASE = "http://localhost:8088/api/announcements";
 
@@ -10,9 +14,13 @@ const AnnouncementAdminPage = () => {
   const [editingData, setEditingData] = useState(null);
   const [isCreating, setIsCreating] = useState(false);
 
-  const fetchAnnouncements = async () => {
+  const fetchAnnouncements = async (query = "") => {
     try {
-      const res = await fetch(`${API_BASE}`);
+      const url = query ? `${API_BASE}${query}` : API_BASE;
+      const res = await fetch(url, {
+        method: "GET",
+        credentials: "include",
+      });
       if (!res.ok) throw new Error("載入失敗");
       const data = await res.json();
       setAnnouncements(data);
@@ -25,6 +33,12 @@ const AnnouncementAdminPage = () => {
   useEffect(() => {
     fetchAnnouncements();
   }, []);
+
+  // 搜尋公告
+  const handleSearch = (keyword, startDate, endDate) => {
+    const params = new URLSearchParams({ keyword, startDate, endDate });
+    return fetchAnnouncements(`/search?${params.toString()}`);
+  };
 
   //編輯公告
   const handleEdit = (item) => {
@@ -43,6 +57,8 @@ const AnnouncementAdminPage = () => {
         });
 
         if (!res.ok) throw new Error("刪除失敗");
+        alert("公告刪除成功");
+        window.location.reload();
 
         await fetchAnnouncements();
       } catch (err) {
@@ -90,6 +106,9 @@ const AnnouncementAdminPage = () => {
         newItem = await activeChage.json();
       }
 
+      alert(`公告已成功${editId ? "編輯" : "新增"}`);
+      window.location.reload();
+
       resetForm();
     } catch (error) {
       console.error("送出失敗：", error);
@@ -108,6 +127,7 @@ const AnnouncementAdminPage = () => {
   return (
     <div className="admin-page">
       <h1>公告管理</h1>
+      <AnnouncementSearchForm onSearch={handleSearch} />
       {/* 在沒有進行新增或編輯時顯示"新增公告" */}
       {!isCreating && !editId && (
         <button onClick={() => setIsCreating(true)}>新增公告</button>
@@ -119,6 +139,7 @@ const AnnouncementAdminPage = () => {
           initialData={editingData || {}}
           mode={editId ? "edit" : "create"}
           onSubmit={handleFormSubmit}
+          onCancel={resetForm}
         />
       )}
 
@@ -136,6 +157,7 @@ const AnnouncementAdminPage = () => {
           </li>
         ))}
       </ul>
+      <HomeButton />
     </div>
   );
 };

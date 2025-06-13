@@ -1,24 +1,32 @@
 import React, { useState, useEffect } from "react";
 import "./AnnouncementForm.css";
 
-const AnnouncementForm = ({ initialData, onSubmit, mode }) => {
-  const data = initialData || {};
-  const [title, setTitle] = useState(data.title || "");
-  const [content, setContent] = useState(data.content || "");
-  const [active, setActive] = useState(
-    data.announcementActive === undefined ? true : data.announcementActive
-  );
+const AnnouncementForm = ({ initialData, onSubmit, onCancel, mode }) => {
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [active, setActive] = useState(true);
+
+  //填上原始內容
+  useEffect(() => {
+    const data = initialData || {};
+    setTitle(data.title || "");
+    setContent(data.content || "");
+    setActive(
+      data.announcementActive === undefined ?  true : data.announcementActive
+    );
+  }, [initialData])
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (title.trim().length < 3) {
       alert("標題至少需要 3 個字");
       return;
     }
-    try {
-      await onSearch(keyword, startDate, endDate);
-    } finally {
-      setIsSearching(false);
-    }
+    await onSubmit({
+      title,
+      content,
+      announcementActive: active,
+    });
   };
   return (
     <form className="announcement-form" onSubmit={handleSubmit}>
@@ -47,7 +55,14 @@ const AnnouncementForm = ({ initialData, onSubmit, mode }) => {
         顯示公告
       </label>
 
+      <div className="form-actions">
       <button type="submit">{mode === "create" ? "新增" : "儲存修改"}</button>
+      {onCancel && (
+        <button type="button" className="cancel-button" onClick={onCancel}>
+          取消
+          </button>
+      )}
+      </div>
     </form>
   );
 };

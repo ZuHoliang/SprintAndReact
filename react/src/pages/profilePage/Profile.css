@@ -53,6 +53,13 @@ input {
   box-sizing: border-box;
 }
 
+.user-role {
+  margin-bottom: 16px;
+  color: #666;
+  font-weight: bold;
+}
+
+
 /* 按鈕群組 */
 .button-group {
   margin-top: 12px;

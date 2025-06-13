@@ -9,7 +9,7 @@ import java.util.zip.DataFormatException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.demo.exception.AnnouncementNoFoundException;
+import com.example.demo.exception.AnnouncementNotFoundException;
 import com.example.demo.mapper.AnnouncementMapper;
 import com.example.demo.model.dto.AnnouncementDto;
 import com.example.demo.model.dto.AnnouncementEditDto;
@@ -53,7 +53,7 @@ public class AnnouncementServiceImpl implements AnnouncementService {
 	@Override
 	public AnnouncementDto getAnnouncementById(Long id) {
 		Announcement announcement = announcementRepository.findById(id)
-				.orElseThrow(() -> new AnnouncementNoFoundException("找不到公告:ID=" + id));
+				.orElseThrow(() -> new AnnouncementNotFoundException("找不到公告:ID=" + id));
 		return announcementMapper.toDto(announcement);
 	}
 	
@@ -80,9 +80,12 @@ public class AnnouncementServiceImpl implements AnnouncementService {
 	@Override
 	public AnnouncementDto updateAnnouncement(Long id, AnnouncementEditDto dto) {
 		Announcement existing = announcementRepository.findById(id)
-				.orElseThrow(() -> new AnnouncementNoFoundException("找不到要更新的公告:ID=" + id));
+				.orElseThrow(() -> new AnnouncementNotFoundException("找不到要更新的公告:ID=" + id));
 		existing.setTitle(dto.getTitle());
 		existing.setContent(dto.getContent());
+		if (dto.getAnnouncementActive() != null) {
+			existing.setAnnouncementActive(dto.getAnnouncementActive());
+		}
 		Announcement update = announcementRepository.save(existing);
 		return announcementMapper.toDto(update);
 	}
@@ -91,7 +94,7 @@ public class AnnouncementServiceImpl implements AnnouncementService {
 	@Override
 	public AnnouncementDto setAnnouncementActive(Long id, Boolean active) {
 		Announcement announcement = announcementRepository.findById(id)
-				.orElseThrow(() -> new AnnouncementNoFoundException("找不到公告:ID=" + id));
+				.orElseThrow(() -> new AnnouncementNotFoundException("找不到公告:ID=" + id));
 		announcement.setAnnouncementActive(active);
 		Announcement update = announcementRepository.save(announcement);
 		return announcementMapper.toDto(update);
@@ -101,7 +104,7 @@ public class AnnouncementServiceImpl implements AnnouncementService {
 	@Override
 	public void deleteAnnouncement(Long id) {
 		if (!announcementRepository.existsById(id)) {
-			throw new AnnouncementNoFoundException("找不到要刪除的公告:ID=" + id);
+			throw new AnnouncementNotFoundException("找不到要刪除的公告:ID=" + id);
 		}
 		announcementRepository.deleteById(id);
 		System.out.println("公告已刪除:ID=" + id);

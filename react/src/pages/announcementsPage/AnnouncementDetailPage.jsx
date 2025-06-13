@@ -38,6 +38,7 @@ const AnnouncementDetailPage = () => {
       </p>
       <p>
         <strong>發布時間:</strong>
+        {new Date(announcement.createdTime).toLocaleString()}
       </p>
       <div className="content">{announcement.content}</div>
       <HomeButton />
