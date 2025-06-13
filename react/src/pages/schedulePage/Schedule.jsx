@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
+import { AuthContext } from "../../contexts/AuthContext";
 import ScheduleCalendar from "../../components/schedule/ScheduleCalendar.jsx";
 import ShiftActionDialog from "../../components/schedule/ShiftActionDialog.jsx";
 import HomeButton from "../../components/HomeButton";
@@ -15,6 +16,7 @@ const Schedule = () => {
   const [selectedShift, setSelectedShift] = useState("");
   const [selectedMembers, setSelectedMembers] = useState([]);
   const [selfScheduled, setSelfScheduled] = useState(false);
+  const { user } = useContext(AuthContext);
 
   useEffect(() => {
     fetchSchedules();
@@ -47,8 +49,7 @@ const Schedule = () => {
     );
     //使用者是否已經排了該班次
     setSelectedMembers(dayMembers);
-    const cert = JSON.parse(sessionStorage.getItem("userCert"));
-    setSelfScheduled(dayMembers.some((m) => m.userId === cert?.userId));
+    setSelfScheduled(dayMembers.some((m) => m.userId === user?.userId));
     setDialogOpen(true);
   };
 

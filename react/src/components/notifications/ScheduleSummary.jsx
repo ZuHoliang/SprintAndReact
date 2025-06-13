@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { formatDate } from "../../utils/formatDate";
 import "./ScheduleSummary.css";
 
 const API_BASE = "http://localhost:8088/api";
@@ -64,7 +65,7 @@ const ScheduleSummary = () => {
       <h3>我的排班</h3>
       <div className="summary-grid">
         {days.map((d) => {
-          const dateStr = d.toISOString().split("T")[0];
+          const dateStr = formatDate(d);
           return (
             <div key={dateStr} className="summary-cell">
               <div className="date-label">{d.getDate()}</div>

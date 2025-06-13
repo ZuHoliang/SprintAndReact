@@ -1,6 +1,7 @@
 import React from "react";
 import ScheduleCell from "./ScheduleCell";
 import MonthSwitcher from "./MonthSwitcher";
+import { formatDate } from "../../utils/formatDate";
 import "./ScheduleCalendar.css";
 
 //整體班表
@@ -28,7 +29,7 @@ const ScheduleCalendar = ({
       <MonthSwitcher year={year} month={month} onChange={onMonthChange} />
       <div className="calendar-grid">
         {days.map((date) => {
-          const formatted = date.toISOString().split("T")[0]; //將日期轉成yyyy-mm-dd(ISO標準格式)
+          const formatted = formatDate(date);
           const daySchedules = schedules.filter(
             (s) => s.workDate === formatted
           );

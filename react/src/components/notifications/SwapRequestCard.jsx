@@ -23,7 +23,7 @@ const SwapRequestCard = ({ request, isReceived, onReply, onCancel }) => {
       <div className="card-content">
         <div>
           <strong>{isReceived ? "申請人" : "被申請人"} :</strong>
-          {isReceived ? request.requesterName : request.targetName}
+          {isReceived ? request.requestUsername : request.targetUsername}
         </div>
         <div>
           <strong>班別:</strong>

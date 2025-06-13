@@ -15,6 +15,7 @@ import lombok.ToString;
 public class ScheduleDto {
 	private Integer scheduleId;
 	private Integer userId;
+	private String accountId;
 	private String username;
 	private String shiftType;
 	private LocalDate workDate;

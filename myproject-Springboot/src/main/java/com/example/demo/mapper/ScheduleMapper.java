@@ -28,6 +28,7 @@ public class ScheduleMapper {
 		dto.setUpdateTime(schedule.getUpdateTime());
 		if(schedule.getWorkUser() != null) {
 			dto.setUserId(schedule.getWorkUser().getUserId());
+			dto.setAccountId(schedule.getWorkUser().getAccountId());
 			dto.setUsername(schedule.getWorkUser().getUsername());
 		}
 		return dto;
