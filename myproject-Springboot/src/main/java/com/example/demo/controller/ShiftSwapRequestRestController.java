@@ -95,7 +95,7 @@ public class ShiftSwapRequestRestController {
 		UserCert cert = (UserCert) session.getAttribute("userCert");
 		User user = userRepository.findById(cert.getUserId())
 				.orElseThrow(() -> new SwapRequestNotFoundException("找不到使用者"));
-		List<ShiftSwapRequest> list = shiftSwapRequestService.getRequestsSentByUser(user);
+		List<ShiftSwapRequest> list = shiftSwapRequestService.getRequestsReceivedByUser(user);
 		return ResponseEntity.ok(ApiResponse.success("查詢成功", list));
 	}
 	
@@ -106,7 +106,7 @@ public class ShiftSwapRequestRestController {
 		UserCert cert = (UserCert) session.getAttribute("userCert");
 		User user = userRepository.findById(cert.getUserId())
 				.orElseThrow(() -> new SwapRequestNotFoundException("找不到使用者"));
-		List<ShiftSwapRequest> list = shiftSwapRequestService.getRequestsReceivedByUser(user);
+		List<ShiftSwapRequest> list = shiftSwapRequestService.getRequestsSentByUser(user);
 		return ResponseEntity.ok(ApiResponse.success("查詢成功", list));
 	}
 

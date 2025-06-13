@@ -20,12 +20,16 @@ public class ScheduleMapper {
 
 	//Entity轉DTO
 	public ScheduleDto toDto(Schedule schedule) {
-		ScheduleDto dto = modelMapper.map(schedule, ScheduleDto.class);
-		if (schedule.getWorkUser() != null) {
+		ScheduleDto dto = new ScheduleDto();
+		dto.setScheduleId(schedule.getScheduleId() != null ? schedule.getScheduleId().intValue() : null);
+		dto.setWorkDate(schedule.getWorkDate());
+		dto.setShiftType(schedule.getShiftType() != null? schedule.getShiftType().name() : null);
+		dto.setCreateTime(schedule.getCreateTime());
+		dto.setUpdateTime(schedule.getUpdateTime());
+		if(schedule.getWorkUser() != null) {
 			dto.setUserId(schedule.getWorkUser().getUserId());
 			dto.setUsername(schedule.getWorkUser().getUsername());
 		}
-		dto.setShiftType(schedule.getShiftType().name());
 		return dto;
 	
 	}
