@@ -8,7 +8,7 @@ const NotificationList = ({ onClose }) => {
 
   const fetchList = () => {
     fetch(`${API_BASE}/notifications`, { credentials: "include" })
-      .then((res = res.json()))
+      .then((res) => res.json())
       .then((data) => {
         if (data.status === 200) setList(data.data);
         else alert("載入失敗");
@@ -22,7 +22,7 @@ const NotificationList = ({ onClose }) => {
 
   const handleDelete = async (id) => {
     const res = await fetch(`${API_BASE}/notifications/${id}`, {
-      method: "Delete",
+      method: "DELETE",
       credentials: "include",
     });
     if (res.ok) {
@@ -40,9 +40,9 @@ const NotificationList = ({ onClose }) => {
         <p>目前無通知</p>
       ) : (
         list.map((n) => (
-          <div key={n.notifiactionId} className="notification-item">
+          <div key={n.notificationId} className="notification-item">
             <span>{n.text}</span>
-            <button onClick={() => handleDelete(n.notifiactionId)}>關閉</button>
+            <button onClick={() => handleDelete(n.notificationId)}>關閉</button>
           </div>
         ))
       )}
