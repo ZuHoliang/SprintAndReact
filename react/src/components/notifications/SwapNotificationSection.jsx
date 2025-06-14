@@ -7,7 +7,7 @@ const SwapNotificationSection = () => {
   const [receivedRequests, setReceivedRequests] = useState([]);
   const [sentRequests, setSentRequests] = useState([]);
 
-  useEffect(() => {
+  const fetchRequest = () => {
     fetch(`${API_BASE}/swap/received`, { credentials: "include" })
       .then((res) => res.json())
       .then((data) => {
@@ -23,6 +23,10 @@ const SwapNotificationSection = () => {
         else alert("載入失敗");
       })
       .catch(() => alert("連線失敗"));
+  };
+
+  useEffect(() => {
+    fetchRequest();
   }, []);
 
   const handleReject = async (id, isApprove, message) => {
@@ -35,11 +39,10 @@ const SwapNotificationSection = () => {
       }
     );
     if (res.ok) {
-      alert("已取消換班申請");
-      window.location.reload();
+      alert(isApprove ? "已同意換班" : "已拒絕換班");
+      fetchRequest();
     } else {
       alert("取消失敗");
-      window.location.reload();
     }
   };
 
@@ -50,10 +53,9 @@ const SwapNotificationSection = () => {
     });
     if (res.ok) {
       alert("已取消換班申請");
-      window.location.reload();
+      fetchRequest();
     } else {
       alert("取消失敗");
-      window.location.reload();
     }
   };
 

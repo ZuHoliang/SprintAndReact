@@ -50,11 +50,12 @@ const ScheduleSummary = () => {
       (s) => s.workDate === date && s.shiftType === type
     );
     if (!match) return null;
-    const futureClass = isFuture(date) ? "future" : "";
+    const future = isFuture(date);
+    const shiftClass = `${type.toLowerCase()} shift ${
+      future ? "future" : "past"
+    }`;
     return (
-      <div className={`shift ${type.toLowerCase()}${futureClass}`}>
-        {type === "MORNING" ? "早班" : "晚班"}
-      </div>
+      <div className={shiftClass}>{type === "MORNING" ? "早班" : "晚班"}</div>
     );
   };
 
@@ -67,7 +68,12 @@ const ScheduleSummary = () => {
         {days.map((d) => {
           const dateStr = formatDate(d);
           return (
-            <div key={dateStr} className="summary-cell">
+            <div
+              key={dateStr}
+              className={`summary-cell ${
+                isFuture(dateStr) ? "future-cell" : ""
+              }`}
+            >
               <div className="date-label">{d.getDate()}</div>
               {renderShiftText(dateStr, "MORNING")}
               {renderShiftText(dateStr, "EVENING")}

@@ -10,10 +10,11 @@ import com.example.demo.service.NotificationService;
 public class NotificationServiceImpl implements NotificationService {
 
 	public void sendSwapRequestNotification(User targetUser, ShiftSwapRequest request) {
-		System.out.printf("[通知] %s 收到來自 %s 的換班請求: %s %s /n",
-				targetUser.getUsername(),
-                request.getRequestUser().getUsername(),
-                request.getSwapDate()
+		 System.out.printf("[通知] %s 收到來自 %s 的換班請求: %s %s\n",
+                 targetUser.getUsername(),
+                 request.getRequestUser().getUsername(),
+                 request.getSwapDate(),
+                 request.getSwapToShift()
                 );
 		
 	}

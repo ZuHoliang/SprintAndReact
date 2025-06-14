@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import com.example.demo.model.entity.ShiftSwapRequest;
 import com.example.demo.model.entity.User;
+import com.example.demo.model.enums.RequestStatus;
 
 @Repository
 public interface ShiftSwapRequestRepository extends JpaRepository<ShiftSwapRequest, Long>{
@@ -17,8 +18,14 @@ public interface ShiftSwapRequestRepository extends JpaRepository<ShiftSwapReque
 	//查詢某位使用者發出的換班請求
 	List<ShiftSwapRequest> findByRequestUser(User requestUser);
 	
+	//查詢某位使用者發出的換班請求(狀態)
+	List<ShiftSwapRequest> findByRequestUserAndReqStatus(User requestUser, RequestStatus requestStatus);	
+	
 	//查詢某位使用者收到的換班請求
 	List<ShiftSwapRequest> findByTargetUser(User targetUser);
+	
+	//查詢某位使用者收到的換班請求(狀態)
+	List<ShiftSwapRequest> findByTargetUserAndReqStatus(User targetUser, RequestStatus requestStatus);
 	
 	//查詢某天的所有排班
     List<ShiftSwapRequest> findBySwapDate(LocalDate swapDate);

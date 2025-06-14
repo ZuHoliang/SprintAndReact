@@ -128,6 +128,7 @@ public class ShiftSwapRequestServiceImpl implements ShiftSwapRequestService {
 
 	// 拒絕換班
 	@Override
+	@Transactional
 	public void rejectSwap(Integer requestId, String message) {
 		ShiftSwapRequest request = shiftSwapRequestRepository.findById(requestId.longValue())
 				.orElseThrow(() -> new SwapRequestNotFoundException("找不到換班請求"));
@@ -147,6 +148,7 @@ public class ShiftSwapRequestServiceImpl implements ShiftSwapRequestService {
 
 	// 取消換班
 	@Override
+	@Transactional
 	public void cancelSwap(Integer requestId) {
 		ShiftSwapRequest request = shiftSwapRequestRepository.findById(requestId.longValue())
 				.orElseThrow(() -> new SwapRequestNotFoundException("找不到換班請求"));
@@ -157,13 +159,13 @@ public class ShiftSwapRequestServiceImpl implements ShiftSwapRequestService {
 	// 查詢已發出的請求
 	@Override
 	public List<ShiftSwapRequest> getRequestsSentByUser(User user) {
-		return shiftSwapRequestRepository.findByRequestUser(user);
+		return shiftSwapRequestRepository.findByRequestUserAndReqStatus(user, RequestStatus.PENDING);
 	}
 
 	// 查詢收到的請求
 	@Override
 	public List<ShiftSwapRequest> getRequestsReceivedByUser(User user) {
-		return shiftSwapRequestRepository.findByTargetUser(user);
+		return shiftSwapRequestRepository.findByTargetUserAndReqStatus(user, RequestStatus.PENDING);
 	}
 
 }

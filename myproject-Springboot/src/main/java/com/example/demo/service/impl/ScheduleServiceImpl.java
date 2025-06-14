@@ -15,6 +15,8 @@ import com.example.demo.model.enums.ShiftType;
 import com.example.demo.repository.ScheduleRepository;
 import com.example.demo.service.ScheduleService;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class ScheduleServiceImpl implements ScheduleService {
 
@@ -57,6 +59,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 
 	// 取消排班
 	@Override
+	@Transactional
 	public void cancelShift(User user, LocalDate date, ShiftType shiftType) {
 		scheduleRepository.deleteByWorkUserAndWorkDateAndShiftType(user, date, shiftType);
 	}

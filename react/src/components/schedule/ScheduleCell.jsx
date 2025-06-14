@@ -6,8 +6,12 @@ const ScheduleCell = ({ date, schedules, onShiftClick }) => {
   const getShiftMembers = (type) => {
     return schedules
       .filter((s) => s.shiftType === type)
-      .map((s) => `${s.accountId}(${s.username})`)
-      .join(",");
+      .map((s, index) => (
+        <span key={index}>
+          ({s.accountId}) <br /> {s.username}
+          <br />
+        </span>
+      ));
   };
 
   return (
@@ -17,13 +21,13 @@ const ScheduleCell = ({ date, schedules, onShiftClick }) => {
         className="shift morning"
         onClick={() => onShiftClick(date, "MORNING")}
       >
-        早班: {getShiftMembers("MORNING") || "--"}
+        早班: <br /> {getShiftMembers("MORNING") || "--"}
       </div>
       <div
         className="shift evening"
         onClick={() => onShiftClick(date, "EVENING")}
       >
-        晚班: {getShiftMembers("EVENING") || "--"}{" "}
+        晚班: <br /> {getShiftMembers("EVENING") || "--"}
       </div>
     </div>
   );

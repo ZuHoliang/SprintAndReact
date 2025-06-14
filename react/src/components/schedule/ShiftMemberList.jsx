@@ -18,7 +18,7 @@ const ShiftMemberList = ({ members, selectedId, onSelect }) => {
               checked={selectedId === member.userId}
               onChange={() => onSelect(member.userId)}
             />
-            {member.accountId}({member.username})
+            ({member.accountId}){member.username}
           </label>
         ))
       )}
