@@ -30,10 +30,13 @@ public class LoginRestController {
 
 	@PostMapping("/login")
 	public ResponseEntity<ApiResponse<UserCert>> login(@RequestParam String accountId, @RequestParam String password,
-			HttpSession session) {
+			@RequestParam(defaultValue = "false") boolean rememberMe, HttpSession session) {
 		try {
 			UserCert cert = certService.getCert(accountId, password);
 			session.setAttribute("userCert", cert);
+			if (rememberMe) {
+				session.setMaxInactiveInterval(60*60*24*7);
+			}
 			return ResponseEntity.ok(ApiResponse.success("登入成功", cert));
 		} catch (UserNotFoundException e) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED)

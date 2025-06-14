@@ -34,12 +34,13 @@ const AuthProvider = ({ children }) => {
   };
 
   //登入
-  const login = async (accountId, password, remerberMe = false) => {
+  const login = async (accountId, password, rememberMe = false) => {
     try {
       // setLoading(true);
       const formData = new FormData();
       formData.append("accountId", accountId);
       formData.append("password", password);
+      formData.append("rememberMe", rememberMe);
 
       const response = await fetch(`${API_BASE}/auth/login`, {
         method: "POST",
