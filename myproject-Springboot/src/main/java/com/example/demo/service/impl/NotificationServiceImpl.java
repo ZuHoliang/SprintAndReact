@@ -3,7 +3,9 @@ package com.example.demo.service.impl;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.example.demo.model.entity.Notification;
 import com.example.demo.model.entity.ShiftSwapRequest;
@@ -51,8 +53,12 @@ public class NotificationServiceImpl implements NotificationService {
 	}
 
 	@Override
-	public void deleteNotification(Long id) {
-		notificationRepository.deleteById(id);
+	public void deleteNotification(User user, Long id) {
+		Notification n = notificationRepository.findById(id)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "通知不存在"));
+		if (!n.getRecipient().getUserId().equals(user.getUserId())) {
+			throw new ResponseStatusException(HttpStatus.FORBIDDEN, "無權刪除該通知");
+		}
+		notificationRepository.delete(n);
 	}
-
 }

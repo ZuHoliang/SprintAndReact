@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import HomeButton from "../../components/HomeButton";
+import useAuthFetch from "../../utils/useAuthFetch";
 import "./ManageAccount.css";
 
 const API_BASE = "http://localhost:8088/api";
@@ -24,6 +25,8 @@ const ManageAccount = () => {
     active: true,
   });
 
+  const authFetch = useAuthFetch();
+
   useEffect(() => {
     fetchUsers();
     // 清空欄位
@@ -45,7 +48,7 @@ const ManageAccount = () => {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const res = await fetch(`${API_BASE}/admin/users`, {
+      const res = await authFetch(`${API_BASE}/admin/users`, {
         method: "GET",
         credentials: "include",
       });
@@ -105,17 +108,20 @@ const ManageAccount = () => {
       if (editData.password.trim()) {
         //修改密碼
         updates.push(
-          fetch(`${API_BASE}/admin/users/${selectedUser.accountId}/password`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            credentials: "include",
-            body: JSON.stringify({ password: editData.password }),
-          })
+          authFetch(
+            `${API_BASE}/admin/users/${selectedUser.accountId}/password`,
+            {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              credentials: "include",
+              body: JSON.stringify({ password: editData.password }),
+            }
+          )
         );
       }
       //修改權限
       updates.push(
-        fetch(`${API_BASE}/admin/users/${selectedUser.accountId}/role`, {
+        authFetch(`${API_BASE}/admin/users/${selectedUser.accountId}/role`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
@@ -124,7 +130,7 @@ const ManageAccount = () => {
       );
       //修改在職狀態
       updates.push(
-        fetch(`${API_BASE}/admin/users/${selectedUser.accountId}/active`, {
+        authFetch(`${API_BASE}/admin/users/${selectedUser.accountId}/active`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
@@ -153,7 +159,7 @@ const ManageAccount = () => {
       return;
     }
     try {
-      const res = await fetch(`${API_BASE}/admin/users`, {
+      const res = await authFetch(`${API_BASE}/admin/users`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -315,7 +321,6 @@ const ManageAccount = () => {
                     type="checkbox"
                     checked={editData.role === 2}
                     onChange={(e) => {
-                      console.log("role 改變：", e.target.checked);
                       setEditData({
                         ...editData,
                         role: e.target.checked ? 2 : 1,
@@ -331,7 +336,6 @@ const ManageAccount = () => {
                     type="checkbox"
                     checked={editData.active}
                     onChange={(e) => {
-                      console.log("active 改變：", e.target.checked);
                       setEditData({ ...editData, active: e.target.checked });
                     }}
                   />

@@ -1,0 +1,11 @@
+.week-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.week-day {
+  font-weight: bold;
+}

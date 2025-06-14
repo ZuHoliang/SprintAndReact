@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { AuthContext } from "../../contexts/AuthContext";
+import AuthContext from "../../contexts/AuthContext.js";
 import ScheduleCalendar from "../../components/schedule/ScheduleCalendar.jsx";
 import ShiftActionDialog from "../../components/schedule/ShiftActionDialog.jsx";
 import HomeButton from "../../components/HomeButton";

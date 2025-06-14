@@ -1,6 +1,5 @@
-import React, { createContext, useState, useEffect, Children } from "react";
-
-const AuthContext = createContext();
+import React, { useState, useEffect } from "react";
+import AuthContext from "./AuthContext.js";
 
 const API_BASE = "http://localhost:8088/api";
 
@@ -111,4 +110,4 @@ const AuthProvider = ({ children }) => {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-export { AuthContext, AuthProvider };
+export default AuthProvider;

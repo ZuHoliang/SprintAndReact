@@ -2,9 +2,10 @@ import React, { useState, useEffect } from "react";
 import AnnouncementForm from "../../forms/AnnouncementForm";
 import AnnouncementSearchForm from "../../forms/AnnouncementSearchForm";
 import HomeButton from "../../components/HomeButton";
+import useAuthFetch from "../../utils/useAuthFetch";
 import "./AnnouncementAdminPage.css";
 import "../../forms/AnnouncementSearchForm.css";
-import "../../forms/AnnouncementForm.css"
+import "../../forms/AnnouncementForm.css";
 
 const API_BASE = "http://localhost:8088/api/announcements";
 
@@ -13,11 +14,12 @@ const AnnouncementAdminPage = () => {
   const [editId, setEditId] = useState(null);
   const [editingData, setEditingData] = useState(null);
   const [isCreating, setIsCreating] = useState(false);
+  const authFetch = useAuthFetch();
 
   const fetchAnnouncements = async (query = "") => {
     try {
       const url = query ? `${API_BASE}${query}` : API_BASE;
-      const res = await fetch(url, {
+      const res = await authFetch(url, {
         method: "GET",
         credentials: "include",
       });
@@ -51,7 +53,7 @@ const AnnouncementAdminPage = () => {
   const handleDelete = async (id) => {
     if (window.confirm("確定要刪除這則公告嗎?")) {
       try {
-        const res = await fetch(`${API_BASE}/admin/${id}`, {
+        const res = await authFetch(`${API_BASE}/admin/${id}`, {
           method: "DELETE",
           credentials: "include",
         });
@@ -74,7 +76,7 @@ const AnnouncementAdminPage = () => {
     const method = editId ? "PUT" : "POST";
 
     try {
-      const response = await fetch(url, {
+      const response = await authFetch(url, {
         method,
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -95,7 +97,7 @@ const AnnouncementAdminPage = () => {
         editingData &&
         editingData.announcementActive !== data.announcementActive
       ) {
-        const activeChage = await fetch(
+        const activeChage = await authFetch(
           `${API_BASE}/admin/${editId}/active?active=${data.announcementActive}`,
           {
             method: "PUT",

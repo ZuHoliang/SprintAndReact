@@ -17,7 +17,7 @@ public interface NotificationService {
 	//取得使用者通知
 	List<Notification> getNotifications(User user);
 	//刪除通知
-	void deleteNotification(Long id);
+	void deleteNotification(User user, Long id);
 	
 	
 }

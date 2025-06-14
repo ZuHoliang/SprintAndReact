@@ -37,7 +37,7 @@ public class NotificationRestController {
 	
 	@GetMapping("")
 	public ResponseEntity<ApiResponse<List<Notification>>> getMyNotifications(HttpSession session) {
-		authService.checkAdminPermission(session);
+		authService.checkAuthenticated(session);
 		UserCert cert = (UserCert) session.getAttribute("userCert");
 		User user = userRepository.findById(cert.getUserId()).orElse(null);
 		List<Notification> list = notificationService.getNotifications(user);
@@ -46,8 +46,10 @@ public class NotificationRestController {
 	
 	@DeleteMapping("/{id}")
 	public ResponseEntity<ApiResponse<Void>> deleteNotification(@PathVariable Long id, HttpSession session){
-		authService.checkAdminPermission(session);
-		notificationService.deleteNotification(id);
+		authService.checkAuthenticated(session);
+		UserCert cert = (UserCert) session.getAttribute("userCert");
+        User user = userRepository.findById(cert.getUserId()).orElse(null);
+		notificationService.deleteNotification(user, id);
 		return ResponseEntity.ok(ApiResponse.success("刪除成功", null));
 	}
 
