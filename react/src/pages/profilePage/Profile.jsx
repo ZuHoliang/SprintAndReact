@@ -1,13 +1,16 @@
 import { useState, useEffect } from "react";
+import useAuthFetch from "../../utils/useAuthFetch";
 import HomeButton from "../../components/HomeButton";
 import ScheduleSummary from "../../components/notifications/ScheduleSummary";
 import SwapNotificationSection from "../../components/notifications/SwapNotificationSection";
+import NotificationList from "../../components/notifications/NotificationList";
 import "./Profile.css";
 
 const API_BASE = "http://localhost:8088/api";
 
 const Profile = () => {
   const [user, setUser] = useState(null);
+  const authFetch = useAuthFetch();
   const [mode, setMode] = useState("view"); //view=預設頁面|editName:修改名字|editPassword:修改密碼
   const [editName, setEditName] = useState("");
   const [editPassword, setEditPassword] = useState({
@@ -15,8 +18,10 @@ const Profile = () => {
     confirmPassword: "",
   });
   const [passwordVerify, setPasswordVerify] = useState("");
+  const [refreshKey, setRefreshKey] = useState(0);
+  const triggerRefresh = () => setRefreshKey((k) => k + 1);
   useEffect(() => {
-    fetch(`${API_BASE}/users/me`, { credentials: "include" })
+    authFetch(`${API_BASE}/users/me`, { credentials: "include" })
       .then((res) => {
         if (!res.ok) throw new Error("無法取得使用者資料");
         return res.json();
@@ -39,7 +44,7 @@ const Profile = () => {
     if (!validatePassword(passwordVerify))
       return alert("密碼請包含英文大小寫與數字");
     try {
-      const res = await fetch(`${API_BASE}/users/me`, {
+      const res = await authFetch(`${API_BASE}/users/me`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -63,7 +68,7 @@ const Profile = () => {
     if (password !== confirmPassword) return alert("確認密碼與新密碼不一致");
     if (!validatePassword(password)) return alert("密碼請包含英文大小寫與數字");
     try {
-      const res = await fetch(`${API_BASE}/users/me`, {
+      const res = await authFetch(`${API_BASE}/users/me`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -84,6 +89,7 @@ const Profile = () => {
     <div className="user-profile-container">
       <div className="left-panel">
         <h3>通知中心</h3>
+        <NotificationList onClose={triggerRefresh} />
         <SwapNotificationSection />
       </div>
       <div className="right-panel">
@@ -93,7 +99,7 @@ const Profile = () => {
         </p>
         <p className="user-role">{user.role === 2 ? "管理者" : "一般員工"}</p>
         <div>
-          <ScheduleSummary />
+          <ScheduleSummary refreshKey={refreshKey} />
         </div>
         <h3>修改個人資料</h3>
         {mode === "view" && (

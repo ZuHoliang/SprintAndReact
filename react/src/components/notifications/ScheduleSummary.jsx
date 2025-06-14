@@ -4,7 +4,7 @@ import "./ScheduleSummary.css";
 
 const API_BASE = "http://localhost:8088/api";
 
-const ScheduleSummary = () => {
+const ScheduleSummary = ({ refreshKey }) => {
   const today = new Date();
   const [schedules, setSchedules] = useState([]);
   const [year] = useState(today.getFullYear());
@@ -24,7 +24,7 @@ const ScheduleSummary = () => {
         }
       })
       .catch(() => alert("連線錯誤"));
-  }, [year, month]);
+  }, [year, month, refreshKey]);
 
   //計算當月日期
   const getDaysInMonth = (year, month) => {

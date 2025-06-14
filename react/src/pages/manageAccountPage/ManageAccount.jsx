@@ -27,19 +27,19 @@ const ManageAccount = () => {
   useEffect(() => {
     fetchUsers();
     // 清空欄位
-  setNewUser({
-    username: "",
-    password: "",
-    confirmPassword: "",
-    isAdmin: false,
-    active: true,
-  });
-  setEditData({
-    password: "",
-    confirmPassword: "",
-    role: 1,
-    active: true,
-  });
+    setNewUser({
+      username: "",
+      password: "",
+      confirmPassword: "",
+      isAdmin: false,
+      active: true,
+    });
+    setEditData({
+      password: "",
+      confirmPassword: "",
+      role: 1,
+      active: true,
+    });
   }, []);
 
   const fetchUsers = async () => {
@@ -160,12 +160,13 @@ const ManageAccount = () => {
         body: JSON.stringify({
           username: newUser.username,
           password: newUser.password,
-          isAdmin: newUser.role ? 2 : 1,
+          role: newUser.isAdmin ? 2 : 1,
           active: newUser.active,
         }),
       });
       if (!res.ok) throw new Error("新增失敗");
-      alert("新增成功");
+      const createdUser = await res.json;
+      alert(`新增成功，權限: ${createdUser.role === 2 ? "管理者" : "員工"}`);
       await fetchUsers();
       setNewUser({
         username: "",
@@ -227,13 +228,13 @@ const ManageAccount = () => {
                             role: user.role,
                             active: user.active,
                           });
-                           setNewUser({
-    username: "",
-    password: "",
-    confirmPassword: "",
-    isAdmin: false,
-    active: true,
-  });
+                          setNewUser({
+                            username: "",
+                            password: "",
+                            confirmPassword: "",
+                            isAdmin: false,
+                            active: true,
+                          });
                         }}
                       >
                         編輯
@@ -249,21 +250,26 @@ const ManageAccount = () => {
           <div className="form-header">
             <h2>{selectedUser ? "編輯員工" : "新增員工"}</h2>
             {selectedUser && (
-              <button onClick={() =>{ setSelectedUser(null);
-                setNewUser({
-                  username: "",
-                  password: "",
-                  confirmPassword: "",
-                  isAdmin: false,
-                  active: true,
-                });
-                setEditData({
-                password: "",
-                confirmPassword: "",
-                role: 1,
-                active: true,
-                });
-               } }>新增員工</button>
+              <button
+                onClick={() => {
+                  setSelectedUser(null);
+                  setNewUser({
+                    username: "",
+                    password: "",
+                    confirmPassword: "",
+                    isAdmin: false,
+                    active: true,
+                  });
+                  setEditData({
+                    password: "",
+                    confirmPassword: "",
+                    role: 1,
+                    active: true,
+                  });
+                }}
+              >
+                新增員工
+              </button>
             )}
           </div>
 

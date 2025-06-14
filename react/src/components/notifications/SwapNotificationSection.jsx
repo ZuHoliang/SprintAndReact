@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import useAuthFetch from "../../utils/useAuthFetch";
 import SwapRequestCard from "./SwapRequestCard";
 
 const API_BASE = "http://localhost:8088/api";
@@ -6,9 +7,10 @@ const API_BASE = "http://localhost:8088/api";
 const SwapNotificationSection = () => {
   const [receivedRequests, setReceivedRequests] = useState([]);
   const [sentRequests, setSentRequests] = useState([]);
+  const authFetch = useAuthFetch();
 
   const fetchRequest = () => {
-    fetch(`${API_BASE}/swap/received`, { credentials: "include" })
+    authFetch(`${API_BASE}/swap/received`, { credentials: "include" })
       .then((res) => res.json())
       .then((data) => {
         if (data.status === 200) setReceivedRequests(data.data);
@@ -16,7 +18,7 @@ const SwapNotificationSection = () => {
       })
       .catch(() => alert("連線失敗"));
 
-    fetch(`${API_BASE}/swap/sent`, { credentials: "include" })
+    authFetch(`${API_BASE}/swap/sent`, { credentials: "include" })
       .then((res) => res.json())
       .then((data) => {
         if (data.status === 200) setSentRequests(data.data);
@@ -31,7 +33,7 @@ const SwapNotificationSection = () => {
 
   const handleReject = async (id, isApprove, message) => {
     const action = isApprove ? "approve" : "reject";
-    const res = await fetch(
+    const res = await authFetch(
       `${API_BASE}/swap/${id}/${action}?message=${encodeURIComponent(message)}`,
       {
         method: "POST",
@@ -47,7 +49,7 @@ const SwapNotificationSection = () => {
   };
 
   const handleCancel = async (id) => {
-    const res = await fetch(`${API_BASE}/swap/${id}`, {
+    const res = await authFetch(`${API_BASE}/swap/${id}`, {
       method: "DELETE",
       credentials: "include",
     });

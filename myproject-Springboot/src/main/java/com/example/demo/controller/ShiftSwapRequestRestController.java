@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.exception.SwapRequestNotFoundException;
+import com.example.demo.mapper.ShiftSwapRequestMapper;
 import com.example.demo.model.dto.ShiftSwapRequestDto;
 import com.example.demo.model.dto.UserCert;
 import com.example.demo.model.entity.ShiftSwapRequest;
@@ -46,9 +47,12 @@ public class ShiftSwapRequestRestController {
 	@Autowired
 	private UserRepository userRepository;
 	
+	@Autowired
+	private ShiftSwapRequestMapper shiftSwapRequestMapper;
+	
 	//換班申請
 	@PostMapping("")
-	public ResponseEntity<ApiResponse<ShiftSwapRequest>> requestSwap(@RequestBody ShiftSwapRequestDto dto
+	public ResponseEntity<ApiResponse<ShiftSwapRequestDto>> requestSwap(@RequestBody ShiftSwapRequestDto dto
 			, HttpSession session){
 		authService.checkAuthenticated(session);
 		UserCert cert = (UserCert) session.getAttribute("userCert");
@@ -61,7 +65,8 @@ public class ShiftSwapRequestRestController {
 		LocalDate date = dto.getSwapDate();
 		ShiftType shiftType = dto.getSwapToShift() != null? ShiftType.valueOf(dto.getSwapToShift()) : null;
 		ShiftSwapRequest request = shiftSwapRequestService.requestSwap(requester, target, date, shiftType, dto.getSwapMessage());
-		return ResponseEntity.ok(ApiResponse.success("已送出換班申請", request));
+		ShiftSwapRequestDto result = shiftSwapRequestMapper.toDto(request);
+		return ResponseEntity.ok(ApiResponse.success("已送出換班申請", result));
 	}
 	
 	//同意換班
@@ -90,24 +95,26 @@ public class ShiftSwapRequestRestController {
 	
 	//查詢收到的請求
 	@GetMapping("/received")
-	public ResponseEntity<ApiResponse<List<ShiftSwapRequest>>> getReceivedRequests(HttpSession session){
+	public ResponseEntity<ApiResponse<List<ShiftSwapRequestDto>>> getReceivedRequests(HttpSession session){
 		authService.checkAuthenticated(session);
 		UserCert cert = (UserCert) session.getAttribute("userCert");
 		User user = userRepository.findById(cert.getUserId())
 				.orElseThrow(() -> new SwapRequestNotFoundException("找不到使用者"));
 		List<ShiftSwapRequest> list = shiftSwapRequestService.getRequestsReceivedByUser(user);
-		return ResponseEntity.ok(ApiResponse.success("查詢成功", list));
+		List<ShiftSwapRequestDto> dtos = list.stream().map(shiftSwapRequestMapper::toDto).toList();
+		return ResponseEntity.ok(ApiResponse.success("查詢成功", dtos));
 	}
 	
 	//查詢送出的請求
 	@GetMapping("/sent")
-	public ResponseEntity<ApiResponse<List<ShiftSwapRequest>>> getSentRequests(HttpSession session){
+	public ResponseEntity<ApiResponse<List<ShiftSwapRequestDto>>> getSentRequests(HttpSession session){
 		authService.checkAuthenticated(session);
 		UserCert cert = (UserCert) session.getAttribute("userCert");
 		User user = userRepository.findById(cert.getUserId())
 				.orElseThrow(() -> new SwapRequestNotFoundException("找不到使用者"));
 		List<ShiftSwapRequest> list = shiftSwapRequestService.getRequestsSentByUser(user);
-		return ResponseEntity.ok(ApiResponse.success("查詢成功", list));
+		List<ShiftSwapRequestDto> dtos = list.stream().map(shiftSwapRequestMapper::toDto).toList();
+		return ResponseEntity.ok(ApiResponse.success("查詢成功", dtos));
 	}
 
 }
