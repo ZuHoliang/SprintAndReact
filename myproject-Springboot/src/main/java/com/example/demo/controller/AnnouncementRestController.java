@@ -45,6 +45,12 @@ public class AnnouncementRestController {
 	public List<AnnouncementDto> getAllAnnouncements() {
 		return announcementService.getAllAnnouncements();
 	}
+	
+	//公告分頁
+	@GetMapping("/page")
+	public List<AnnouncementDto> getAnnouncementsByPage(@RequestParam(defaultValue = "0") int page){
+		return announcementService.getAnnouncementsByPage(page);
+	}
 
 	// 指定公告
 	@GetMapping("/{id}")

@@ -11,6 +11,8 @@ public interface AnnouncementService {
 
 	List<AnnouncementDto> getAllAnnouncements();
 	
+	List<AnnouncementDto> getAnnouncementsByPage(int page);
+	
 	List<AnnouncementDto> searchAnnouncements(String keyword, String startDate, String endDate);
 
 	AnnouncementDto getAnnouncementById(Long id);

@@ -59,6 +59,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 
 	// 取消排班
 	@Override
+	@Transactional
 	public void cancelShift(User user, LocalDate date, ShiftType shiftType) {
 		scheduleRepository.deleteByWorkUserAndWorkDateAndShiftType(user, date, shiftType);
 	}

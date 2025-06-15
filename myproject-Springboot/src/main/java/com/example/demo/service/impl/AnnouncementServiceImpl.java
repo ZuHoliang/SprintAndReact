@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.zip.DataFormatException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.exception.AnnouncementNotFoundException;
@@ -49,6 +50,16 @@ public class AnnouncementServiceImpl implements AnnouncementService {
 		return announcementMapper.toDtoList(all);
 	}
 
+	
+	//公告分頁
+	@Override
+	public List<AnnouncementDto> getAnnouncementsByPage(int page){
+		List<Announcement> result = announcementRepository.findAllByOrderByCreatedTimeDesc(PageRequest.of(page,10));
+		return announcementMapper.toDtoList(result);
+	}
+	
+	
+	
 	// ID查詢公告
 	@Override
 	public AnnouncementDto getAnnouncementById(Long id) {

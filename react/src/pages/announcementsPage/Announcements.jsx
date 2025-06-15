@@ -11,11 +11,14 @@ const API_BASE = "http://localhost:8088/api/announcements";
 const Announcements = () => {
   const [announcements, setAnnouncements] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(0);
 
-  const fetchAnnouncements = async (query = "") => {
+  const fetchAnnouncements = async (p = 0, query = "") => {
     try {
       setLoading(true);
-      const url = query ? `${API_BASE}${query}` : API_BASE;
+      const url = query
+        ? `${API_BASE}${query}&page=${p}`
+        : `${API_BASE}/page?page${p}`;
       const res = await fetch(url, {
         method: "GET",
         credentials: "include",
@@ -23,6 +26,7 @@ const Announcements = () => {
       if (!res.ok) throw new Error("載入失敗");
       const data = await res.json();
       setAnnouncements(data);
+      setPage(p);
     } catch (err) {
       console.error("查詢公告失敗", err);
     } finally {
@@ -31,7 +35,7 @@ const Announcements = () => {
   };
 
   useEffect(() => {
-    fetchAnnouncements();
+    fetchAnnouncements(0);
   }, []);
 
   //搜尋
@@ -41,7 +45,7 @@ const Announcements = () => {
       startDate,
       endDate,
     });
-    return fetchAnnouncements(`/search?${params.toString()}`);
+    return fetchAnnouncements(0, `/search?${params.toString()}`);
   };
 
   return (
@@ -58,6 +62,23 @@ const Announcements = () => {
           </div>
         ))
       )}
+      <div className="page-controls">
+        <button
+          disabled={page === 0}
+          onClick={() => fetchAnnouncements(page - 1)}
+        >
+          上一頁
+        </button>
+
+        <span>第{page + 1}頁</span>
+
+        <button
+          disabled={announcements.length < 10}
+          onClick={() => fetchAnnouncements(page + 1)}
+        >
+          下一頁
+        </button>
+      </div>
       <HomeButton />
     </div>
   );
