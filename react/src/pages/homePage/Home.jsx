@@ -9,6 +9,40 @@ const API_BASE = "http://localhost:8088/api";
 
 const Home = () => {
   const { user, loading, logout } = useContext(AuthContext);
+  const [notificationCount, setNotificationCount] = useState(0);
+
+  useEffect(() => {
+    if (!user) {
+      setNotificationCount(0);
+      return;
+    }
+
+    const checkNotifications = async () => {
+      try {
+        const resNoti = await fetch(`${API_BASE}/notifications`, {
+          credentials: "include",
+        });
+        let list1 = [];
+        if (resNoti.ok) {
+          const data = await resNoti.json();
+          if (data.status === 200) list1 = data.data;
+        }
+
+        const resSwap = await fetch(`${API_BASE}/swap/received`, {
+          credentials: "include",
+        });
+        let list2 = [];
+        if (resSwap.ok) {
+          const data = await resSwap.json();
+          if (data.status === 200) list2 = data.data;
+        }
+        setNotificationCount(list1.length + list2.length);
+      } catch (err) {
+        console.error("通知取得失敗", err);
+      }
+    };
+    checkNotifications();
+  }, [user]);
 
   // 判斷用戶權限
   const isAdmin = user?.role === 2; //role=2 是 ADMIN
@@ -40,7 +74,11 @@ const Home = () => {
               <h2 className="page-title">歡迎 {user.username || user.name}!</h2>
               {(isUser || isAdmin) && (
                 <>
-                  <NavButton to="/profile" label="個人資料" />
+                  <NavButton
+                    to="/profile"
+                    label="個人中心"
+                    notificationCount={notificationCount}
+                  />
                   <NavButton to="/schedule" label="班表" />
                 </>
               )}

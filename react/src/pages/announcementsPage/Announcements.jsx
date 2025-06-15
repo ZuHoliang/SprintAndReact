@@ -18,7 +18,7 @@ const Announcements = () => {
       setLoading(true);
       const url = query
         ? `${API_BASE}${query}&page=${p}`
-        : `${API_BASE}/page?page${p}`;
+        : `${API_BASE}/page?page=${p}`;
       const res = await fetch(url, {
         method: "GET",
         credentials: "include",

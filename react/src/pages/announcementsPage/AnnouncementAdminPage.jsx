@@ -167,7 +167,8 @@ const AnnouncementAdminPage = () => {
       <ul className="announcement-list">
         {announcements.map((a) => (
           <li key={a.announcementId}>
-            <strong>{a.title}</strong>({a.createdTime})
+            <strong>{a.title}</strong>(
+            {new Date(a.createdTime).toLocaleString("zh-TW")})
             <div>
               <button onClick={() => handleEdit(a)}>編輯</button>
               <button onClick={() => handleDelete(a.announcementId)}>
