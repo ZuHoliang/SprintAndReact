@@ -8,6 +8,7 @@ import java.util.zip.DataFormatException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.exception.AnnouncementNotFoundException;
@@ -27,6 +28,16 @@ public class AnnouncementServiceImpl implements AnnouncementService {
 	@Autowired
 	private AnnouncementMapper announcementMapper;
 
+	@Autowired
+	private SimpMessagingTemplate messagingTemplate;
+
+	//取得最新公告(WebStocket)
+	private void broadcastLatest() {
+		List<Announcement> latest = announcementRepository.findTop5ByAnnouncementActiveTrueOrderByCreatedTimeDesc();
+		List<AnnouncementDto> dtos = announcementMapper.toDtoList(latest);
+		messagingTemplate.convertAndSend("/topic/announcements", dtos);
+	}
+
 	// 取得最新公告
 	@Override
 	public List<AnnouncementDto> getLatestAnnouncements() {
@@ -40,7 +51,9 @@ public class AnnouncementServiceImpl implements AnnouncementService {
 		Announcement entity = announcementMapper.toEntity(dto);
 		entity.setAuthorId(authorId);
 		Announcement saved = announcementRepository.save(entity);
-		return announcementMapper.toDto(saved);
+		AnnouncementDto dtoResult =announcementMapper.toDto(saved);
+		broadcastLatest();
+		return dtoResult;
 	}
 
 	// 取得所有公告
@@ -50,16 +63,13 @@ public class AnnouncementServiceImpl implements AnnouncementService {
 		return announcementMapper.toDtoList(all);
 	}
 
-	
-	//公告分頁
+	// 公告分頁
 	@Override
-	public List<AnnouncementDto> getAnnouncementsByPage(int page){
-		List<Announcement> result = announcementRepository.findAllByOrderByCreatedTimeDesc(PageRequest.of(page,10));
+	public List<AnnouncementDto> getAnnouncementsByPage(int page) {
+		List<Announcement> result = announcementRepository.findAllByOrderByCreatedTimeDesc(PageRequest.of(page, 10));
 		return announcementMapper.toDtoList(result);
 	}
-	
-	
-	
+
 	// ID查詢公告
 	@Override
 	public AnnouncementDto getAnnouncementById(Long id) {
@@ -67,20 +77,20 @@ public class AnnouncementServiceImpl implements AnnouncementService {
 				.orElseThrow(() -> new AnnouncementNotFoundException("找不到公告:ID=" + id));
 		return announcementMapper.toDto(announcement);
 	}
-	
-	//搜尋公告
+
+	// 搜尋公告
 	@Override
-	public List<AnnouncementDto> searchAnnouncements(String keyword, String startDate, String endDate){
+	public List<AnnouncementDto> searchAnnouncements(String keyword, String startDate, String endDate) {
 		LocalDateTime start = null;
 		LocalDateTime end = null;
 		try {
-			if(startDate != null && !startDate.isEmpty()) {
+			if (startDate != null && !startDate.isEmpty()) {
 				start = LocalDate.parse(startDate).atStartOfDay();
 			}
-			if(endDate != null && !endDate.isEmpty()) {
-				end = LocalDate.parse(endDate).atTime(23,59,59);
-			}			
-		}catch (DateTimeParseException e) {
+			if (endDate != null && !endDate.isEmpty()) {
+				end = LocalDate.parse(endDate).atTime(23, 59, 59);
+			}
+		} catch (DateTimeParseException e) {
 			throw new IllegalArgumentException("日期格式錯誤(yyyy-MM-dd)");
 		}
 		List<Announcement> result = announcementRepository.searchByKeyword(keyword, start, end);
@@ -98,7 +108,9 @@ public class AnnouncementServiceImpl implements AnnouncementService {
 			existing.setAnnouncementActive(dto.getAnnouncementActive());
 		}
 		Announcement update = announcementRepository.save(existing);
-		return announcementMapper.toDto(update);
+		AnnouncementDto dtoResult = announcementMapper.toDto(update);
+		broadcastLatest();
+		return dtoResult;
 	}
 
 	// 隱藏公告
@@ -108,7 +120,9 @@ public class AnnouncementServiceImpl implements AnnouncementService {
 				.orElseThrow(() -> new AnnouncementNotFoundException("找不到公告:ID=" + id));
 		announcement.setAnnouncementActive(active);
 		Announcement update = announcementRepository.save(announcement);
-		return announcementMapper.toDto(update);
+		AnnouncementDto dtoResult = announcementMapper.toDto(update);
+		broadcastLatest();
+		return dtoResult;
 	}
 
 	// 刪除公告
@@ -119,6 +133,7 @@ public class AnnouncementServiceImpl implements AnnouncementService {
 		}
 		announcementRepository.deleteById(id);
 		System.out.println("公告已刪除:ID=" + id);
+		broadcastLatest();
 	}
 
 }

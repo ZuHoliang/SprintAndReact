@@ -1,10 +1,15 @@
 import React, { useState, useEffect, useContext } from "react";
+import {
+  connectAnnouncementSocket,
+  disconnectAnnouncementSocket,
+} from "../../utils/socket";
 import AnnouncementSearchForm from "../../forms/AnnouncementSearchForm";
 import AnnouncementCard from "../../contexts/AnnouncementCard";
 import HomeButton from "../../components/HomeButton";
 import "../../forms/AnnouncementSearchForm.css";
 import "./Announcements.css";
 import "../../components/HomeButton.css";
+import { data } from "react-router-dom";
 
 const API_BASE = "http://localhost:8088/api/announcements";
 
@@ -36,6 +41,13 @@ const Announcements = () => {
 
   useEffect(() => {
     fetchAnnouncements(0);
+    connectAnnouncementSocket((data) => {
+      if (Array.isArray(data)) {
+        setAnnouncements(data);
+        setPage(0);
+      }
+    });
+    return () => disconnectAnnouncementSocket();
   }, []);
 
   //搜尋
@@ -56,11 +68,13 @@ const Announcements = () => {
       {loading ? (
         <p>載入中...</p>
       ) : (
-        announcements.map((a) => (
-          <div key={a.announcementId}>
-            <AnnouncementCard announcement={a} />
-          </div>
-        ))
+        announcements
+          .filter((a) => a.announcementActive)
+          .map((a) => (
+            <div key={a.announcementId}>
+              <AnnouncementCard announcement={a} />
+            </div>
+          ))
       )}
       <div className="page-controls">
         <button

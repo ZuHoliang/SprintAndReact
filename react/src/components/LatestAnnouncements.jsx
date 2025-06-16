@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+  connectAnnouncementSocket,
+  disconnectAnnouncementSocket,
+} from "../utils/socket";
 import "./LatestAnnouncements.css";
 
 const API_BASE = "http://localhost:8088/api";
@@ -33,6 +37,10 @@ const LatestAnnouncements = () => {
       }
     };
     fetchLatest();
+    connectAnnouncementSocket((data) => {
+      if (Array.isArray(data)) setAnnouncements(data.slice(0, 5));
+    });
+    return () => disconnectAnnouncementSocket();
   }, []);
 
   return (

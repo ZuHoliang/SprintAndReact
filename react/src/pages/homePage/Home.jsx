@@ -3,7 +3,7 @@ import AuthContext from "../../contexts/AuthContext.js";
 import NavButton from "../../components/NavButton";
 import LoginForm from "../../forms/LoginForm";
 import LatestAnnouncements from "../../components/LatestAnnouncements";
-import { connectSocket, disconnectSocket} from "../../utils/socket";
+import { connectSocket, disconnectSocket } from "../../utils/socket";
 import "./Home.css";
 
 const API_BASE = "http://localhost:8088/api";
@@ -44,17 +44,15 @@ const Home = () => {
       }
     };
 
-    connectSocket(user.userId,() => {
-      setNotificationCount((c) => c+1);
+    connectSocket(user.userId, () => {
+      setNotificationCount((c) => c + 1);
     });
 
     checkNotifications();
 
-    return() => {
+    return () => {
       disconnectSocket();
     };
-
-
   }, [user]);
 
   // 判斷用戶權限
@@ -99,7 +97,7 @@ const Home = () => {
               {isAdmin && (
                 <>
                   <NavButton to="/announcements/admin" label="公告管理" />
-                  <NavButton to="/manageaccount" label="管理員工" />
+                  <NavButton to="/manageaccount" label="員工管理" />
                 </>
               )}
 

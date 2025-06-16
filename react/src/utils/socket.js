@@ -2,6 +2,7 @@ import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
 
 let client = null;
+let announcementClient = null;
 
 //建立 STOMP WebSocket 連線
 export const connectSocket = (userId, onMessage) => {
@@ -17,7 +18,7 @@ export const connectSocket = (userId, onMessage) => {
         try {
           const body = JSON.parse(msg.body);
           if (onMessage) onMessage(body);
-        } catch {
+        } catch (err) {
           console.error("訊息解析失敗", err);
         }
       });
@@ -31,5 +32,31 @@ export const disconnectSocket = () => {
   if (client) {
     client.deactivate();
     client = null;
+  }
+};
+
+//建立公告WebStocket連線
+export const connectAnnouncementSocket = (onMessage) => {
+  announcementClient = new Client({
+    webSocketFactory: () => new SockJS("http://localhost:8088/ws"),
+    reconnectDelay: 5000,
+    onConnect: () => {
+      announcementClient.subscribe("/topic/announcements", (msg) => {
+        try {
+          const body = JSON.parse(msg.body);
+          if (onMessage) onMessage(body);
+        } catch (err) {
+          console.error("訊息解析失敗", err);
+        }
+      });
+    },
+  });
+  announcementClient.activate();
+};
+
+export const disconnectAnnouncementSocket = () => {
+  if (announcementClient) {
+    announcementClient.deactivate();
+    announcementClient = null;
   }
 };

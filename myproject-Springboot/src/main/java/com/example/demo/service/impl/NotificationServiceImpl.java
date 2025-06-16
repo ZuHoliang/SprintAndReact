@@ -20,11 +20,12 @@ public class NotificationServiceImpl implements NotificationService {
 
 	@Autowired
 	private NotificationRepository notificationRepository;
-	
+
 	@Autowired
 	private SimpMessagingTemplate messagingTemplate;
 
 	public void sendSwapRequestNotification(User targetUser, ShiftSwapRequest request) {
+		messagingTemplate.convertAndSend("/topic/notifications/" + targetUser.getUserId(), request);
 		System.out.printf("[通知] %s 收到來自 %s 的換班請求: %s %s\n", targetUser.getUsername(),
 				request.getRequestUser().getUsername(), request.getSwapDate(), request.getSwapToShift());
 

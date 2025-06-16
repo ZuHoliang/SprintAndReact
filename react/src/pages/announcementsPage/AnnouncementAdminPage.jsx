@@ -1,4 +1,8 @@
 import React, { useState, useEffect } from "react";
+import {
+  connectAnnouncementSocket,
+  disconnectAnnouncementSocket,
+} from "../../utils/socket";
 import AnnouncementForm from "../../forms/AnnouncementForm";
 import AnnouncementSearchForm from "../../forms/AnnouncementSearchForm";
 import HomeButton from "../../components/HomeButton";
@@ -38,6 +42,13 @@ const AnnouncementAdminPage = () => {
 
   useEffect(() => {
     fetchAnnouncements(0);
+    connectAnnouncementSocket((data) => {
+      if (Array.isArray(data)) {
+        setAnnouncements(data);
+        setpage(0);
+      }
+    });
+    return () => disconnectAnnouncementSocket();
   }, []);
 
   // 搜尋公告
