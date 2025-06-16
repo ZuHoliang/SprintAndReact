@@ -171,7 +171,7 @@ const ManageAccount = () => {
         }),
       });
       if (!res.ok) throw new Error("新增失敗");
-      const createdUser = await res.json;
+      const createdUser = await res.json();
       alert(`新增成功，權限: ${createdUser.role === 2 ? "管理者" : "員工"}`);
       await fetchUsers();
       setNewUser({

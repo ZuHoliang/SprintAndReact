@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -19,6 +20,9 @@ public class NotificationServiceImpl implements NotificationService {
 
 	@Autowired
 	private NotificationRepository notificationRepository;
+	
+	@Autowired
+	private SimpMessagingTemplate messagingTemplate;
 
 	public void sendSwapRequestNotification(User targetUser, ShiftSwapRequest request) {
 		System.out.printf("[通知] %s 收到來自 %s 的換班請求: %s %s\n", targetUser.getUsername(),
@@ -38,6 +42,7 @@ public class NotificationServiceImpl implements NotificationService {
 		n.setType(type);
 		n.setText(text);
 		notificationRepository.save(n);
+		messagingTemplate.convertAndSend("/topic/notifications/" + requester.getUserId(), n);
 
 	}
 

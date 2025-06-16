@@ -4,7 +4,7 @@ import SwapRequestCard from "./SwapRequestCard";
 
 const API_BASE = "http://localhost:8088/api";
 
-const SwapNotificationSection = () => {
+const SwapNotificationSection = ({onUpdated}) => {
   const [receivedRequests, setReceivedRequests] = useState([]);
   const [sentRequests, setSentRequests] = useState([]);
   const authFetch = useAuthFetch();
@@ -43,6 +43,7 @@ const SwapNotificationSection = () => {
     if (res.ok) {
       alert(isApprove ? "已同意換班" : "已拒絕換班");
       fetchRequest();
+      onUpdated && onUpdated();
     } else {
       alert("取消失敗");
     }
@@ -56,6 +57,7 @@ const SwapNotificationSection = () => {
     if (res.ok) {
       alert("已取消換班申請");
       fetchRequest();
+      onUpdated && onUpdated();
     } else {
       alert("取消失敗");
     }

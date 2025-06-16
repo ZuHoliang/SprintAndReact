@@ -3,6 +3,7 @@ import AuthContext from "../../contexts/AuthContext.js";
 import NavButton from "../../components/NavButton";
 import LoginForm from "../../forms/LoginForm";
 import LatestAnnouncements from "../../components/LatestAnnouncements";
+import { connectSocket, disconnectSocket} from "../../utils/socket";
 import "./Home.css";
 
 const API_BASE = "http://localhost:8088/api";
@@ -14,6 +15,7 @@ const Home = () => {
   useEffect(() => {
     if (!user) {
       setNotificationCount(0);
+      disconnectSocket();
       return;
     }
 
@@ -41,7 +43,18 @@ const Home = () => {
         console.error("通知取得失敗", err);
       }
     };
+
+    connectSocket(user.userId,() => {
+      setNotificationCount((c) => c+1);
+    });
+
     checkNotifications();
+
+    return() => {
+      disconnectSocket();
+    };
+
+
   }, [user]);
 
   // 判斷用戶權限
