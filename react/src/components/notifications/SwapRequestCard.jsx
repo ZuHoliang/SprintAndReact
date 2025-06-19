@@ -5,17 +5,28 @@ import "./SwapRequestCard.css";
 //顯示單筆換班通知
 const SwapRequestCard = ({ request, isReceived, onReply, onCancel }) => {
   const [replyOpen, setReplyOpen] = useState(false);
+  const [error, setError] = useState("");
 
   //送出同意
-  const handleApprove = (message) => {
-    onReply(request.shiftSwapId, true, message);
-    setReplyOpen(false);
+  const handleApprove = async (message) => {
+    const result = await onReply(request.shiftSwapId, true, message);
+    if(result?.moderation){
+      setError("*內容不合適");
+    }else if(result?.success){
+      setReplyOpen(flase);
+      setError("");
+    }    
   };
 
   //送出拒絕
-  const handleReject = (message) => {
-    onReply(request.shiftSwapId, false, message);
-    setReplyOpen(false);
+  const handleReject = async (message) => {
+    const result = await onReply(request.shiftSwapId, false, message);
+    if (result?.moderation) {
+      setError("*內容不合適");
+    } else if (result?.success) {
+      setReplyOpen(false);
+      setError("");
+    }
   };
 
   return (
@@ -54,7 +65,11 @@ const SwapRequestCard = ({ request, isReceived, onReply, onCancel }) => {
         <SwapReplyDialog
           onApprove={handleApprove}
           onReject={handleReject}
-          onClose={() => setReplyOpen(false)}
+          onClose={() => {
+            setReplyOpen(false);
+            setError("");
+          }}
+          error={error}
         />
       )}
     </div>

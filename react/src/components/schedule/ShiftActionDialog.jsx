@@ -13,6 +13,7 @@ const ShiftActionDialog = ({
   onAssign,
   onCancel,
   onRequestSwap,
+  error,
 }) => {
   const [swapTargetId, setSwapTargetId] = useState(null);
   const [message, setMessage] = useState("");
@@ -59,6 +60,8 @@ const ShiftActionDialog = ({
           value={message}
           onChange={(e) => setMessage(e.target.value)}
         />
+
+        {error && <div className="field-error">{error}</div>}
 
         <div className="dialog-actions">
           {!isSelfScheduled && members.length < 2 && (

@@ -90,6 +90,18 @@
   background-color: #b02a37;
 }
 
+/* AI 審核設定區塊 */
+.moderation-toggle {
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.moderation-toggle .error-text {
+  margin-left: 8px;
+}
+
 /* 響應式設計：手機裝置下直排 */
 @media (max-width: 768px) {
   .content-row {

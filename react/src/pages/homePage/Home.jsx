@@ -4,6 +4,7 @@ import NavButton from "../../components/NavButton";
 import LoginForm from "../../forms/LoginForm";
 import LatestAnnouncements from "../../components/LatestAnnouncements";
 import { connectSocket, disconnectSocket } from "../../utils/socket";
+import useAuthFetch from "../../utils/useAuthFetch";
 import "./Home.css";
 
 const API_BASE = "http://localhost:8088/api";
@@ -11,6 +12,17 @@ const API_BASE = "http://localhost:8088/api";
 const Home = () => {
   const { user, loading, logout } = useContext(AuthContext);
   const [notificationCount, setNotificationCount] = useState(0);
+  const [usernameCheck, setUsernameCheck] = useState(false);
+  const [announcementCheck, setAnnouncementCheck] = useState(false);
+  const [messageCheck, setMessageCheck] = useState(false);
+  const [modSaving, setModSaving] = useState(false);
+  const [modError, setModError] = useState("");
+
+  const authFetch = useAuthFetch();
+
+  // 判斷用戶權限
+  const isAdmin = user?.role === 2; //role=2 是 ADMIN
+  const isUser = user?.role === 1 || user?.role === 2; // role=1 是 USER，role=2 是 ADMIN
 
   useEffect(() => {
     if (!user) {
@@ -55,9 +67,50 @@ const Home = () => {
     };
   }, [user]);
 
-  // 判斷用戶權限
-  const isAdmin = user?.role === 2; //role=2 是 ADMIN
-  const isUser = user?.role === 1 || user?.role === 2; // role=1 是 USER，role=2 是 ADMIN
+  useEffect(() => {
+    if (!isAdmin) return;
+    const fetchConfig = async () => {
+      try {
+        const res = await authFetch(`${API_BASE}/admin/moderation`, {
+          method: "GET",
+          credentials: "include",
+        });
+        if (!res.ok) throw new Error("fetch failed");
+        const data = await res.json();
+        setUsernameCheck(!!data.usernameCheck);
+        setAnnouncementCheck(!!data.announcementCheck);
+        setMessageCheck(!!data.messageCheck);
+      } catch (err) {
+        setModError("無法載入設定");
+      }
+    };
+    fetchConfig();
+  }, [authFetch, isAdmin]);
+
+  const handleSaveModeration = async () => {
+    setModSaving(true);
+    setModError("");
+    try {
+      const res = await authFetch(`${API_BASE}/admin/moderation`, {
+        method: "PUT",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          usernameCheck,
+          messageCheck,
+          announcementCheck,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || data.status !== 200) {
+        throw new Error(data.message || "更新失敗");
+      }
+    } catch (err) {
+      setModError(err.message || "更新失敗");
+    } finally {
+      setModSaving(false);
+    }
+  };
 
   // if (loading) {
   //   return <div className="loading">載入中...</div>;
@@ -98,6 +151,40 @@ const Home = () => {
                 <>
                   <NavButton to="/announcements/admin" label="公告管理" />
                   <NavButton to="/manageaccount" label="員工管理" />
+                  <div className="moderation-toggle">
+                    <label>
+                      <input
+                        type="checkbox"
+                        checked={usernameCheck}
+                        onChange={(e) => setUsernameCheck(e.target.checked)}
+                      />
+                      帳號審核
+                    </label>
+                    <label>
+                      <input
+                        type="checkbox"
+                        checked={announcementCheck}
+                        onChange={(e) => setAnnouncementCheck(e.target.checked)}
+                      />
+                      公告審核
+                    </label>
+                    <label>
+                      <input
+                        type="checkbox"
+                        checked={messageCheck}
+                        onChange={(e) => setMessageCheck(e.target.checked)}
+                      />
+                      留言審核
+                    </label>
+                    <button onClick={handleSaveModeration} disabled={modSaving}>
+                      {modSaving ? "儲存中..." : "儲存"}
+                    </button>
+                    {modError && (
+                      <p style={{ color: "red" }} className="error-text">
+                        {modError}
+                      </p>
+                    )}
+                  </div>
                 </>
               )}
 

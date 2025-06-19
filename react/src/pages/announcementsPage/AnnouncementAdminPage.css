@@ -57,6 +57,12 @@
   opacity: 0.85;
 }
 
+.form-error {
+  color: red;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
 /* HomeButton 固定位置（右下角） */
 .home-button {
   position: fixed;

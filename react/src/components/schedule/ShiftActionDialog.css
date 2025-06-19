@@ -70,3 +70,8 @@
 .dialog-actions button:last-child:hover {
   background-color: #7e7e7e;
 }
+
+.field-error {
+  color: red;
+  margin-top: 4px;
+}

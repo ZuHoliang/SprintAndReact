@@ -25,6 +25,8 @@ const ManageAccount = () => {
     active: true,
   });
 
+  const [usernameError, setUsernameError] = useState(false);
+
   const authFetch = useAuthFetch();
 
   useEffect(() => {
@@ -104,43 +106,61 @@ const ManageAccount = () => {
     }
 
     try {
-      const updates = [];
+      setUsernameError(false);
       if (editData.password.trim()) {
         //修改密碼
-        updates.push(
-          authFetch(
-            `${API_BASE}/admin/users/${selectedUser.accountId}/password`,
-            {
-              method: "PUT",
-              headers: { "Content-Type": "application/json" },
-              credentials: "include",
-              body: JSON.stringify({ password: editData.password }),
-            }
-          )
+        const res = await authFetch(
+          `${API_BASE}/admin/users/${selectedUser.accountId}/password`,
+          {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({ password: editData.password }),
+          }
         );
+        const data = await res.json();
+        if (!res.ok) {
+          if (data.message && data.message.includes("使用者名稱不當")) {
+            setUsernameError(true);
+            return;
+          }
+          throw new Error(data.message || "更新失敗");
+        }
       }
       //修改權限
-      updates.push(
-        authFetch(`${API_BASE}/admin/users/${selectedUser.accountId}/role`, {
+      let res = await authFetch(
+        `${API_BASE}/admin/users/${selectedUser.accountId}/role`,
+        {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
           body: JSON.stringify({ role: editData.role }),
-        })
+        }
       );
       //修改在職狀態
-      updates.push(
-        authFetch(`${API_BASE}/admin/users/${selectedUser.accountId}/active`, {
+      let data = await res.json();
+      if (!res.ok) {
+        if (data.message && data.message.includes("使用者名稱不當")) {
+          setUsernameError(ture);
+          return;
+        }
+        throw new Error(data.message || "更新失敗");
+      }
+
+      res = await authFetch(
+        `${API_BASE}/admin/users/${selectedUser.accountId}/active`,
+        {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
           body: JSON.stringify({ active: editData.active }),
-        })
+        }
       );
       await Promise.all(updates);
       alert("修改成功");
       await fetchUsers();
       setSelectedUser(null);
+      setUsernameError(false);
     } catch (err) {
       alert("更新失敗" + err.message);
     }
@@ -159,6 +179,7 @@ const ManageAccount = () => {
       return;
     }
     try {
+      setUsernameError(false);
       const res = await authFetch(`${API_BASE}/admin/users`, {
         method: "POST",
         credentials: "include",
@@ -170,8 +191,15 @@ const ManageAccount = () => {
           active: newUser.active,
         }),
       });
-      if (!res.ok) throw new Error("新增失敗");
-      const createdUser = await res.json();
+      const data = await res.json();
+      if (!res.ok) {
+        if (data.message && data.message.includes("使用者名稱不當")) {
+          setUsernameError(true);
+        } else {
+          alert("新增失敗: " + (data.message || ""));
+        }
+        return;
+      }
       alert(`新增成功，權限: ${createdUser.role === 2 ? "管理者" : "員工"}`);
       await fetchUsers();
       setNewUser({
@@ -181,6 +209,7 @@ const ManageAccount = () => {
         isAdmin: false,
         active: true,
       });
+      setUsernameError(false);
     } catch (err) {
       alert("新增失敗: " + err.message);
     }
@@ -295,10 +324,12 @@ const ManageAccount = () => {
                   name="password"
                   autoComplete="new-password"
                   value={editData.password}
-                  onChange={(e) =>
-                    setEditData({ ...editData, password: e.target.value })
-                  }
+                  onChange={(e) => {
+                    setUsernameError(false);
+                    setEditData({ ...editData, password: e.target.value });
+                  }}
                 />
+                {usernameError && <div className="error">*內容不合適</div>}
               </div>
 
               <div>
@@ -366,10 +397,12 @@ const ManageAccount = () => {
                   name="password"
                   autoComplete="new-password"
                   value={newUser.password}
-                  onChange={(e) =>
-                    setNewUser({ ...newUser, password: e.target.value })
-                  }
+                  onChange={(e) => {
+                    setUsernameError(false);
+                    setNewUser({ ...newUser, password: e.target.value });
+                  }}
                 />
+                {usernameError && <div className="error">*內容不合適</div>}
               </div>
 
               <div>

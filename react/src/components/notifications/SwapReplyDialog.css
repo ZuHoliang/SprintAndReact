@@ -74,3 +74,8 @@
 .dialog-actions button:hover {
   opacity: 0.9;
 }
+
+.field-error {
+  color: red;
+  margin-top: 4px;
+}

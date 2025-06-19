@@ -17,6 +17,7 @@ const Schedule = () => {
   const [selectedShift, setSelectedShift] = useState("");
   const [selectedMembers, setSelectedMembers] = useState([]);
   const [selfScheduled, setSelfScheduled] = useState(false);
+  const [swapError, setSwapError] = useState("");
   const { user } = useContext(AuthContext);
   const authFetch = useAuthFetch();
 
@@ -65,6 +66,7 @@ const Schedule = () => {
     setSelectedMembers([]);
     setSelectedDate("");
     setSelectedShift("");
+    setSwapError("");
   };
 
   //排班
@@ -116,6 +118,7 @@ const Schedule = () => {
   //申請換班
   const handleRequestSwap = async (date, shiftType, targetUserId, message) => {
     try {
+      setSwapError("");
       const res = await authFetch(`${API_BASE}/swap`, {
         method: "POST",
         credentials: "include",
@@ -133,6 +136,8 @@ const Schedule = () => {
       if (res.ok) {
         alert("已送出換班申請");
         handleCloseDialog();
+      } else if (data.message && data.message.includes("留言不當")) {
+        setSwapError("*內容不合適");
       } else {
         alert(data.message || "換班申請送出失敗");
       }
@@ -163,6 +168,7 @@ const Schedule = () => {
         onAssign={handleAssign}
         onCancel={handleCancel}
         onRequestSwap={handleRequestSwap}
+        error={swapError}
       />
 
       <HomeButton />

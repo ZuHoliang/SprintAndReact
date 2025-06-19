@@ -14,7 +14,7 @@ public class CorsConfig implements WebMvcConfigurer {
 				.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // 允許的 HTTP 方法，務必包含 OPTIONS
 				.allowedHeaders("*") // 允許所有請求標頭
 				.allowCredentials(true); // 允許發送 cookies (例如 session cookie)
-//      .maxAge(3600); // 預檢請求的緩存時間 (秒)
+//              .maxAge(3600); // 預檢請求的緩存時間 (秒)
 	}
 
 }

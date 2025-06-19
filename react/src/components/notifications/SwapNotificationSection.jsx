@@ -40,13 +40,21 @@ const SwapNotificationSection = ({onUpdated}) => {
         credentials: "include",
       }
     );
+
+    const data = await res.json();
     if (res.ok) {
       alert(isApprove ? "已同意換班" : "已拒絕換班");
       fetchRequest();
       onUpdated && onUpdated();
-    } else {
-      alert("取消失敗");
+    return{success: true};
     }
+    if (
+      data.message && (data.message.includes("留言不當"))
+    ){
+      return{success: false, moderation: true};
+    }
+    alert("取消失敗");
+    return{ success: false };
   };
 
   const handleCancel = async (id) => {

@@ -19,6 +19,7 @@ const AnnouncementAdminPage = () => {
   const [editingData, setEditingData] = useState(null);
   const [isCreating, setIsCreating] = useState(false);
   const [page, setpage] = useState(0);
+  const [formError, setFormError] = useState("");
   const authFetch = useAuthFetch();
 
   const fetchAnnouncements = async (p = 0, query = "") => {
@@ -59,6 +60,7 @@ const AnnouncementAdminPage = () => {
 
   //編輯公告
   const handleEdit = (item) => {
+    setFormError("");
     setEditId(item.announcementId);
     setEditingData(item);
     setIsCreating(false);
@@ -96,11 +98,18 @@ const AnnouncementAdminPage = () => {
         body: JSON.stringify({ title: data.title, content: data.content }),
       });
 
+      const resData = await response.json().catch(() => ({}));
+
       if (!response.ok) {
-        throw new Error("伺服器錯誤!");
+        let msg = resData.message || "發生錯誤";
+        if ( msg.includes("公告內容不當") ) {
+          msg = "*內容不合適"
+        }
+        setFormError(msg);
+        return;
       }
 
-      let newItem = await response.json();
+      let newItem = resData;
 
       //更新公告
       if (
@@ -129,11 +138,17 @@ const AnnouncementAdminPage = () => {
     }
   };
 
+  const handleCreate = () => {
+    setFormError("");
+    setIsCreating(true);
+  }
+
   //重製表單
   const resetForm = () => {
     setEditId(null);
     setEditingData(null);
     setIsCreating(false);
+    setFormError("");
   };
 
   //表單畫面
@@ -144,7 +159,7 @@ const AnnouncementAdminPage = () => {
       {/* 在沒有進行新增或編輯時顯示"新增公告" */}
       {!isCreating && !editId && (
         <div className="control-bar">
-          <button onClick={() => setIsCreating(true)}>新增公告</button>
+          <button onClick={handleCreate}>新增公告</button>
           {/* 換頁 */}
           <div className="page-controls">
             <button
@@ -166,12 +181,15 @@ const AnnouncementAdminPage = () => {
 
       {/* 顯示表單 */}
       {(isCreating || editId) && (
+        <>
+        {formError && <p className="form-error">{formError}</p>}
         <AnnouncementForm
           initialData={editingData || {}}
           mode={editId ? "edit" : "create"}
           onSubmit={handleFormSubmit}
           onCancel={resetForm}
         />
+        </>
       )}
 
       {/* 公告表單 */}
