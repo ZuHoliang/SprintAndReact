@@ -141,7 +141,7 @@ const ManageAccount = () => {
       let data = await res.json();
       if (!res.ok) {
         if (data.message && data.message.includes("使用者名稱不當")) {
-          setUsernameError(ture);
+          setUsernameError(true);
           return;
         }
         throw new Error(data.message || "更新失敗");
@@ -156,7 +156,6 @@ const ManageAccount = () => {
           body: JSON.stringify({ active: editData.active }),
         }
       );
-      await Promise.all(updates);
       alert("修改成功");
       await fetchUsers();
       setSelectedUser(null);
@@ -200,7 +199,7 @@ const ManageAccount = () => {
         }
         return;
       }
-      alert(`新增成功，權限: ${createdUser.role === 2 ? "管理者" : "員工"}`);
+      alert(`新增成功，權限: ${data.role === 2 ? "管理者" : "員工"}`);
       await fetchUsers();
       setNewUser({
         username: "",

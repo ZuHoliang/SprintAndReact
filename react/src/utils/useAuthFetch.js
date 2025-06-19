@@ -8,7 +8,11 @@ const useAuthFetch = () => {
 
   return useCallback(
     async (url, options = {}) => {
-      const response = await fetch(url, options);
+      const headers = {
+        Accept: "application/json",
+        ...(options.headers || {}),
+      };
+      const response = await fetch(url, { ...options, headers });
       if (response.status === 401) {
         if (clearUser) clearUser(); //登出
         navigate("/"); //導回首頁
