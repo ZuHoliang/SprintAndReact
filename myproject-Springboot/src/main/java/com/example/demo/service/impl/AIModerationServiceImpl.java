@@ -19,7 +19,8 @@ public class AIModerationServiceImpl implements AIModerationService {
 	public boolean isAllowed(String text) {
 		try {
 			String promptText = "啟用文字審核功能...如果內文無異常回覆'允許'如果內文不合適回覆'屏蔽'。回覆:" + text;
-			String result = chatClient.prompt().user(promptText).call().content();
+			String result = chatClient.prompt().user(promptText).call().content();			
+			System.out.println(result);
 			return !result.trim().equalsIgnoreCase("屏蔽");
 		} catch (Exception e) {
 			System.err.println("AI連接異常: " + e.getMessage());

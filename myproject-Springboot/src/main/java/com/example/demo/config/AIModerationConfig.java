@@ -5,9 +5,9 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class AIModerationConfig {
-	private boolean usernameCheck = false;
-	private boolean messageCheck = false;
-	private boolean announcementCheck = false;
+	private boolean usernameCheck = true;
+	private boolean messageCheck = true;
+	private boolean announcementCheck = true;
 	
 	public boolean isUsernameCheck() {
 		return usernameCheck;
