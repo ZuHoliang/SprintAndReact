@@ -20,6 +20,7 @@ public class AIModerationServiceImpl implements AIModerationService {
 		try {
 			String promptText = "啟用文字審核功能...如果內文無異常回覆'Allow'如果內文不合適回覆'Block'。回覆:" + text;
 			String result = chatClient.prompt().user(promptText).call().content();
+			System.out.println(result);			
 			return !result.trim().equalsIgnoreCase("Block");
 		} catch (Exception e) {
 			System.err.println("AI連接異常: " + e.getMessage());

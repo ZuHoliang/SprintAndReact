@@ -7,8 +7,10 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.example.demo.config.AIModerationConfig;
 import com.example.demo.exception.AnnouncementNotFoundException;
@@ -56,7 +58,7 @@ public class AnnouncementServiceImpl implements AnnouncementService {
 	@Override
 	public AnnouncementDto createAnnouncement(AnnouncementEditDto dto, Integer authorId) {
 		if (moderationConfig.isAnnouncementCheck() && (!aiModerationService.isAllowed(dto.getTitle()) || !aiModerationService.isAllowed(dto.getContent()))) {
-			throw new IllegalAccessError("公告內容不當");
+			 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "公告內容不當");
 		}
 		Announcement entity = announcementMapper.toEntity(dto);
 		entity.setAuthorId(authorId);
@@ -101,7 +103,7 @@ public class AnnouncementServiceImpl implements AnnouncementService {
 				end = LocalDate.parse(endDate).atTime(23, 59, 59);
 			}
 		} catch (DateTimeParseException e) {
-			throw new IllegalArgumentException("日期格式錯誤(yyyy-MM-dd)");
+			 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "日期格式錯誤(yyyy-MM-dd)");
 		}
 		List<Announcement> result = announcementRepository.searchByKeyword(keyword, start, end);
 		return announcementMapper.toDtoList(result);
@@ -113,7 +115,7 @@ public class AnnouncementServiceImpl implements AnnouncementService {
 		Announcement existing = announcementRepository.findById(id)
 				.orElseThrow(() -> new AnnouncementNotFoundException("找不到要更新的公告:ID=" + id));
 		if (moderationConfig.isAnnouncementCheck() &&(!aiModerationService.isAllowed(dto.getTitle()) || !aiModerationService.isAllowed(dto.getContent()))) {
-			throw new IllegalArgumentException("公告內容不當");
+			 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "公告內容不當");
 		}
 		existing.setTitle(dto.getTitle());
 		existing.setContent(dto.getContent());
