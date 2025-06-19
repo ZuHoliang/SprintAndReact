@@ -10,12 +10,12 @@ const SwapRequestCard = ({ request, isReceived, onReply, onCancel }) => {
   //送出同意
   const handleApprove = async (message) => {
     const result = await onReply(request.shiftSwapId, true, message);
-    if(result?.moderation){
+    if (result?.moderation) {
       setError("*內容不合適");
-    }else if(result?.success){
-      setReplyOpen(flase);
+    } else if (result?.success) {
+      setReplyOpen(false);
       setError("");
-    }    
+    }
   };
 
   //送出拒絕

@@ -101,10 +101,13 @@ const Home = () => {
           announcementCheck,
         }),
       });
-      const data = await res.json();
-      if (!res.ok || data.status !== 200) {
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
         throw new Error(data.message || "更新失敗");
       }
+      setUsernameCheck(!!data.usernameCheck);
+      setAnnouncementCheck(!!data.announcementCheck);
+      setMessageCheck(!!data.messageCheck);
     } catch (err) {
       setModError(err.message || "更新失敗");
     } finally {
