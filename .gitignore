@@ -1,11 +1,11 @@
-# Java (Spring Boot)
-/backend/target/    
-*.class             ）
-*.log              
+myproject-Springboot/target/
+myproject-Springboot/logs/
+*.class
+*.log             
 
 # Node (React)
-/frontend/node_modules/  
-dist/                    
+react/node_modules/
+react/dist/                   
 
 # Others
 .DS_Store          

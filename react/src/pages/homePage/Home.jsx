@@ -87,19 +87,21 @@ const Home = () => {
     fetchConfig();
   }, [authFetch, isAdmin]);
 
-  const handleSaveModeration = async () => {
+  const updateModeration = async (field, value) => {
     setModSaving(true);
     setModError("");
+    const payload = {
+      usernameCheck,
+      messageCheck,
+      announcementCheck,
+      [field]: value,
+    };
     try {
       const res = await authFetch(`${API_BASE}/admin/moderation`, {
         method: "PUT",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          usernameCheck,
-          messageCheck,
-          announcementCheck,
-        }),
+        body: JSON.stringify(payload),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
@@ -159,7 +161,11 @@ const Home = () => {
                       <input
                         type="checkbox"
                         checked={usernameCheck}
-                        onChange={(e) => setUsernameCheck(e.target.checked)}
+                        onChange={(e) => {
+                          const value = e.target.checked;
+                          setUsernameCheck(value);
+                          updateModeration("usernameCheck", value);
+                        }}
                       />
                       帳號審核
                     </label>
@@ -167,7 +173,11 @@ const Home = () => {
                       <input
                         type="checkbox"
                         checked={announcementCheck}
-                        onChange={(e) => setAnnouncementCheck(e.target.checked)}
+                        onChange={(e) => {
+                          const value = e.target.checked;
+                          setAnnouncementCheck(value);
+                          updateModeration("announcementCheck", value);
+                        }}
                       />
                       公告審核
                     </label>
@@ -175,13 +185,15 @@ const Home = () => {
                       <input
                         type="checkbox"
                         checked={messageCheck}
-                        onChange={(e) => setMessageCheck(e.target.checked)}
+                        onChange={(e) => {
+                          const value = e.target.checked;
+                          setMessageCheck(value);
+                          updateModeration("messageCheck", value);
+                        }}
                       />
                       留言審核
                     </label>
-                    <button onClick={handleSaveModeration} disabled={modSaving}>
-                      {modSaving ? "儲存中..." : "儲存"}
-                    </button>
+
                     {modError && (
                       <p style={{ color: "red" }} className="error-text">
                         {modError}

@@ -55,6 +55,12 @@ public class UserRestController {
 	public UserDto updatCurrentUser(@Valid @RequestBody PersonalEditDto dto, HttpSession session) {
 		authService.checkAuthenticated(session);
 		UserCert cert = (UserCert) session.getAttribute("userCert");
+		
+		String password = dto.getPassword();
+		if(password != null && password.isBlank()) {
+			password = null;
+		}
+		
 		return userService.updateUser(cert.getUserId(), dto.getUsername(), dto.getPassword());
 	}
 	

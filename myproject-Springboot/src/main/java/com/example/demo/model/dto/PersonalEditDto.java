@@ -1,7 +1,7 @@
 package com.example.demo.model.dto;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
+//import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,9 +17,9 @@ public class PersonalEditDto {
 	@Size(min = 3, message = "使用者名稱至少為3個字")
 	private String username;
 
-	@NotBlank(message = "請輸入密碼")
-	@Size(min = 3, message = "密碼至少為3個字")
-	@Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d).+$", message = "密碼請包含大小寫與數字")
+//	@NotBlank(message = "請輸入密碼")
+//	@Size(min = 3, message = "密碼至少為3個字")
+//	@Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d).+$", message = "密碼請包含大小寫與數字")
 	private String password;
 
 }

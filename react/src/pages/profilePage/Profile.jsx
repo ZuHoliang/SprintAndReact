@@ -17,7 +17,7 @@ const Profile = () => {
     password: "",
     confirmPassword: "",
   });
-  
+
   const [refreshKey, setRefreshKey] = useState(0);
   const triggerRefresh = () => setRefreshKey((k) => k + 1);
   useEffect(() => {
@@ -41,7 +41,7 @@ const Profile = () => {
   const handleUpdateName = async () => {
     //使用者名稱長度>2
     if (editName.length < 2) return alert("使用者名稱請至少2個字");
-    
+
     try {
       const res = await authFetch(`${API_BASE}/users/me`, {
         method: "PUT",
@@ -53,7 +53,6 @@ const Profile = () => {
       alert("使用者名稱修改成功");
       setMode("view");
       setEditName("");
-      setPasswordVerify("");
       const updatedUser = await res.json();
       setUser(updatedUser);
     } catch {
@@ -89,7 +88,7 @@ const Profile = () => {
       <div className="left-panel">
         <h3>通知中心</h3>
         <NotificationList onClose={triggerRefresh} />
-        <SwapNotificationSection onUpdated={triggerRefresh}/>
+        <SwapNotificationSection onUpdated={triggerRefresh} />
       </div>
       <div className="right-panel">
         <h2>個人資訊</h2>
@@ -116,7 +115,7 @@ const Profile = () => {
               value={editName}
               onChange={(e) => setEditName(e.target.value)}
             />
-           
+
             <div className="button-group">
               <button onClick={handleUpdateName}> 確認修改</button>
               <button onClick={() => setMode("view")}>取消修改</button>
