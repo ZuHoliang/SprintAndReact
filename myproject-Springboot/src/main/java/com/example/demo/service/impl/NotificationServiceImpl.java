@@ -81,10 +81,10 @@ public class NotificationServiceImpl implements NotificationService {
 	}
 	
 	@Override
-	public void sendNotificationCountDelta(User user, int delete) {
+	public void sendNotificationCountDelta(User user, int delta) {
 		if (user == null) return;
 		Map<String, Integer> payload = new HashMap<>();
-		payload.put("delete", delete);
+		payload.put("delta", delta);
 		messagingTemplate.convertAndSend("/topic/notifications/" + user.getUserId(), payload);
 	}
 	
