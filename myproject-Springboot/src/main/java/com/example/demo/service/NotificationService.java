@@ -20,7 +20,7 @@ public interface NotificationService {
 	void deleteNotification(User user, Long id);
 	//取得使用者通知
 	List<Notification> getNotifications(User user);
-	
-	
+	//即時調整通知數量
+    void sendNotificationCountDelta(User user, int delta);	
 	
 }

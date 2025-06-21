@@ -1,6 +1,8 @@
 package com.example.demo.service.impl;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -77,4 +79,13 @@ public class NotificationServiceImpl implements NotificationService {
 		}
 		notificationRepository.delete(n);
 	}
+	
+	@Override
+	public void sendNotificationCountDelta(User user, int delete) {
+		if (user == null) return;
+		Map<String, Integer> payload = new HashMap<>();
+		payload.put("delete", delete);
+		messagingTemplate.convertAndSend("/topic/notifications/" + user.getUserId(), payload);
+	}
+	
 }

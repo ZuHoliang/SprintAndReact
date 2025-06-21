@@ -37,22 +37,22 @@ public class ShiftSwapRequestServiceImpl implements ShiftSwapRequestService {
 
 	@Autowired
 	private NotificationService notificationService;
-	
+
 	@Autowired
 	private AIModerationService aiModerationService;
-	
+
 	@Autowired
 	private AIModerationConfig moderationConfig;
 
 	// 發送換班申請
 	@Override
 	public ShiftSwapRequest requestSwap(User requester, User target, LocalDate date, ShiftType shiftType, String note) {
-		if(note != null && moderationConfig.isMessageCheck() && !aiModerationService.isAllowed(note)) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"留言不當");
+		if (note != null && moderationConfig.isMessageCheck() && !aiModerationService.isAllowed(note)) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "留言不當");
 		}
 		// 檢查申請人使否已經排班
 		if (scheduleRepository.existsByWorkUserAndWorkDateAndShiftType(requester, date, shiftType)) {
-			 throw new DuplicateScheduleException("已排班");
+			throw new DuplicateScheduleException("已排班");
 		}
 		// 檢查是要換的班是否已滿
 		int count = scheduleRepository.countByWorkDateAndShiftType(date, shiftType);
@@ -66,8 +66,8 @@ public class ShiftSwapRequestServiceImpl implements ShiftSwapRequestService {
 		request.setRequestUser(requester);
 		request.setTargetUser(target);
 		request.setSwapDate(date);
-        request.setSwapToShift(shiftType);
-        request.setSwapFromShift(requesterSchedule != null ? requesterSchedule.getShiftType() : null);
+		request.setSwapToShift(shiftType);
+		request.setSwapFromShift(requesterSchedule != null ? requesterSchedule.getShiftType() : null);
 		request.setSwapMessage(note);
 		request.setReqStatus(RequestStatus.PENDING);
 
@@ -93,8 +93,8 @@ public class ShiftSwapRequestServiceImpl implements ShiftSwapRequestService {
 
 		request.setReqStatus(RequestStatus.APPROVED);
 		if (message != null) {
-			if(moderationConfig.isMessageCheck() && !aiModerationService.isAllowed(message)) {
-				throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"留言不當");
+			if (moderationConfig.isMessageCheck() && !aiModerationService.isAllowed(message)) {
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "留言不當");
 			}
 			request.setRespMessage(message);
 		}
@@ -151,8 +151,8 @@ public class ShiftSwapRequestServiceImpl implements ShiftSwapRequestService {
 		request.setReqStatus(RequestStatus.REJECTED);
 		// 傳送拒絕訊息
 		if (message != null) {
-			if(moderationConfig.isMessageCheck() && !aiModerationService.isAllowed(message)) {
-				throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"留言不當");
+			if (moderationConfig.isMessageCheck() && !aiModerationService.isAllowed(message)) {
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "留言不當");
 			}
 			request.setRespMessage(message);
 		}
@@ -170,8 +170,8 @@ public class ShiftSwapRequestServiceImpl implements ShiftSwapRequestService {
 				.orElseThrow(() -> new SwapRequestNotFoundException("找不到換班請求"));
 		request.setReqStatus(RequestStatus.CANCELLED);
 		shiftSwapRequestRepository.save(request);
-		if(request.getTargetUser() != null) {
-			notificationService.sendSwapCancelNotification(request.getTargetUser(), request);
+		if (request.getTargetUser() != null) {
+			notificationService.sendNotificationCountDelta(request.getTargetUser(), -1);
 		}
 	}
 

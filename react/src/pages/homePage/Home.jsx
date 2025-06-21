@@ -56,8 +56,12 @@ const Home = () => {
       }
     };
 
-    connectSocket(user.userId, () => {
-      setNotificationCount((c) => c + 1);
+    connectSocket(user.userId, (msg) => {
+      if (msg && typeof msg.delta === "number") {
+        setNotificationCount((c) => Math.max(0, c + msg.delta));
+      } else {
+        setNotificationCount((c) => c + 1);
+      }
     });
 
     checkNotifications();
@@ -157,7 +161,9 @@ const Home = () => {
                   <NavButton to="/announcements/admin" label="公告管理" />
                   <NavButton to="/manageaccount" label="員工管理" />
                   <div className="moderation-toggle">
-                  <span className="moderation-title">AI審核(啟動後將會產生延遲)</span>
+                    <span className="moderation-title">
+                      AI審核(啟動後將會產生延遲)
+                    </span>
                     <div className="moderation-options">
                       <label>
                         <input
