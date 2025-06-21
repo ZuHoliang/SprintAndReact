@@ -13,6 +13,7 @@ const ShiftActionDialog = ({
   onAssign,
   onCancel,
   onRequestSwap,
+  submitting,
   error,
 }) => {
   const [swapTargetId, setSwapTargetId] = useState(null);
@@ -71,7 +72,7 @@ const ShiftActionDialog = ({
           {isSelfScheduled && <button onClick={handleCancel}>取消排班</button>}
 
           {members.length > 0 && !isSelfScheduled && (
-            <button onClick={handleRequestSwap}>發送換班請求</button>
+            <button onClick={handleRequestSwap} disabled={submitting}>{submitting ? "審核中..." : "發送換班請求"}</button>
           )}
 
           <button onClick={onClose}>關閉</button>

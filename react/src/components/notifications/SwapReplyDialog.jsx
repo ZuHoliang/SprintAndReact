@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./SwapReplyDialog.css";
 
-const SwapReplyDialog = ({ onApprove, onReject, onClose, error }) => {
+const SwapReplyDialog = ({ onApprove, onReject, onClose, error, submitting }) => {
   const [message, setMessage] = useState("");
 
   return (
@@ -15,9 +15,9 @@ const SwapReplyDialog = ({ onApprove, onReject, onClose, error }) => {
         />
         {error && <div className="field-error">{error}</div>}
         <div className="dialog-actions">
-          <button onClick={() => onApprove(message)}>同意</button>
-          <button onClick={() => onReject(message)}>拒絕</button>
-          <button onClick={onClose}>取消</button>
+          <button onClick={() => onApprove(message)} disabled = {submitting}>{submitting? "審核中..." : "同意"}</button>
+          <button onClick={() => onReject(message)} disabled = {submitting}>{submitting? "審核中..." : "拒絕"}</button>
+          <button onClick={onClose} disabled={submitting}>取消</button>
         </div>
       </div>
     </div>

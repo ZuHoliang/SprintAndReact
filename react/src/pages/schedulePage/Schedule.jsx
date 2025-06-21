@@ -18,6 +18,7 @@ const Schedule = () => {
   const [selectedMembers, setSelectedMembers] = useState([]);
   const [selfScheduled, setSelfScheduled] = useState(false);
   const [swapError, setSwapError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
   const { user } = useContext(AuthContext);
   const authFetch = useAuthFetch();
 
@@ -119,6 +120,7 @@ const Schedule = () => {
   const handleRequestSwap = async (date, shiftType, targetUserId, message) => {
     try {
       setSwapError("");
+      setSubmitting(true);
       const res = await authFetch(`${API_BASE}/swap`, {
         method: "POST",
         credentials: "include",
@@ -143,6 +145,8 @@ const Schedule = () => {
       }
     } catch {
       alert("連線錯誤");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -168,6 +172,7 @@ const Schedule = () => {
         onAssign={handleAssign}
         onCancel={handleCancel}
         onRequestSwap={handleRequestSwap}
+        submitting={submitting}
         error={swapError}
       />
 

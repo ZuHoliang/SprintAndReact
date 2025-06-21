@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./AnnouncementForm.css";
 
-const AnnouncementForm = ({ initialData, onSubmit, onCancel, mode }) => {
+const AnnouncementForm = ({ initialData, onSubmit, onCancel, mode, submitting }) => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [active, setActive] = useState(true);
@@ -14,7 +14,7 @@ const AnnouncementForm = ({ initialData, onSubmit, onCancel, mode }) => {
     setActive(
       data.announcementActive === undefined ?  true : data.announcementActive
     );
-  }, [initialData])
+  }, [initialData?.announcementId])
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -56,7 +56,7 @@ const AnnouncementForm = ({ initialData, onSubmit, onCancel, mode }) => {
       </label>
 
       <div className="form-actions">
-      <button type="submit">{mode === "create" ? "新增" : "儲存修改"}</button>
+      <button type="submit" disabled={submitting}>{submitting ? "審核中..." : mode === "create" ? "新增" : "儲存修改"}</button>
       {onCancel && (
         <button type="button" className="cancel-button" onClick={onCancel}>
           取消

@@ -26,7 +26,7 @@ const ManageAccount = () => {
   });
 
   const [usernameError, setUsernameError] = useState(false);
-
+  const [submitting, setSubmitting] = useState(false);
   const authFetch = useAuthFetch();
 
   useEffect(() => {
@@ -93,6 +93,7 @@ const ManageAccount = () => {
 
   const handleUpdate = async () => {
     if (!selectedUser) return;
+    setSubmitting(true);
     // 如果密碼欄位有填，才做驗證
     if (editData.password.trim()) {
       if (!validatePassword(editData.password)) {
@@ -162,6 +163,8 @@ const ManageAccount = () => {
       setUsernameError(false);
     } catch (err) {
       alert("更新失敗" + err.message);
+    } finally {
+      setSubmitting(false);
     }
   };
   const handleCreate = async () => {
@@ -179,6 +182,7 @@ const ManageAccount = () => {
     }
     try {
       setUsernameError(false);
+      setSubmitting(true);
       const res = await authFetch(`${API_BASE}/admin/users`, {
         method: "POST",
         credentials: "include",
@@ -211,6 +215,8 @@ const ManageAccount = () => {
       setUsernameError(false);
     } catch (err) {
       alert("新增失敗: " + err.message);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -312,10 +318,11 @@ const ManageAccount = () => {
               <div>
                 <label>員工編號：{selectedUser.accountId}</label>
               </div>
-
+              
               <div>
                 <label>使用者名稱：{selectedUser.username}</label>
               </div>
+              
               <div>
                 <label>新密碼：</label>
                 <input
@@ -327,8 +334,7 @@ const ManageAccount = () => {
                     setUsernameError(false);
                     setEditData({ ...editData, password: e.target.value });
                   }}
-                />
-                {usernameError && <div className="error">*內容不合適</div>}
+                />                
               </div>
 
               <div>
@@ -377,6 +383,7 @@ const ManageAccount = () => {
           ) : (
             <>
               <div>
+              {usernameError && <div className="error">*使用者名稱不合適</div>}
                 <label>使用者名稱：</label>
                 <input
                   type="text"
@@ -401,7 +408,7 @@ const ManageAccount = () => {
                     setNewUser({ ...newUser, password: e.target.value });
                   }}
                 />
-                {usernameError && <div className="error">*內容不合適</div>}
+                
               </div>
 
               <div>
@@ -441,7 +448,7 @@ const ManageAccount = () => {
                   在職
                 </label>
               </div>
-              <button onClick={handleCreate}>確認新增</button>
+              <button onClick={handleCreate} disabled={submitting}>{submitting ? "審核中..." : "確認新增"}</button>
             </>
           )}
         </div>

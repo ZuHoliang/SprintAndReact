@@ -6,9 +6,11 @@ import "./SwapRequestCard.css";
 const SwapRequestCard = ({ request, isReceived, onReply, onCancel }) => {
   const [replyOpen, setReplyOpen] = useState(false);
   const [error, setError] = useState("");
+  const [submiting, setSubmiting] = useState(false);
 
   //送出同意
   const handleApprove = async (message) => {
+    setSubmiting(true);
     const result = await onReply(request.shiftSwapId, true, message);
     if (result?.moderation) {
       setError("*內容不合適");
@@ -16,10 +18,12 @@ const SwapRequestCard = ({ request, isReceived, onReply, onCancel }) => {
       setReplyOpen(false);
       setError("");
     }
+    setSubmiting(false);
   };
 
   //送出拒絕
   const handleReject = async (message) => {
+    setSubmiting(true);
     const result = await onReply(request.shiftSwapId, false, message);
     if (result?.moderation) {
       setError("*內容不合適");
@@ -27,6 +31,7 @@ const SwapRequestCard = ({ request, isReceived, onReply, onCancel }) => {
       setReplyOpen(false);
       setError("");
     }
+    setSubmiting(false);
   };
 
   return (
@@ -51,11 +56,11 @@ const SwapRequestCard = ({ request, isReceived, onReply, onCancel }) => {
       {/* 是否是接收方 */}
       {isReceived ? (
         <div className="card-actions">
-          <button onClick={() => setReplyOpen(true)}>同意 / 拒絕 </button>
+          <button onClick={() => setReplyOpen(true)} disabled={submiting}>同意 / 拒絕 </button>
         </div>
       ) : (
         <div className="card-actions">
-          <button onClick={() => onCancel(request.shiftSwapId)}>
+          <button onClick={() => onCancel(request.shiftSwapId)} disabled={submiting}>
             取消申請
           </button>
         </div>
@@ -70,6 +75,7 @@ const SwapRequestCard = ({ request, isReceived, onReply, onCancel }) => {
             setError("");
           }}
           error={error}
+          submitting={submiting}
         />
       )}
     </div>

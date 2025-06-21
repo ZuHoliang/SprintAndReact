@@ -157,42 +157,45 @@ const Home = () => {
                   <NavButton to="/announcements/admin" label="公告管理" />
                   <NavButton to="/manageaccount" label="員工管理" />
                   <div className="moderation-toggle">
-                    <label>
-                      <input
-                        type="checkbox"
-                        checked={usernameCheck}
-                        onChange={(e) => {
-                          const value = e.target.checked;
-                          setUsernameCheck(value);
-                          updateModeration("usernameCheck", value);
-                        }}
-                      />
-                      帳號審核
-                    </label>
-                    <label>
-                      <input
-                        type="checkbox"
-                        checked={announcementCheck}
-                        onChange={(e) => {
-                          const value = e.target.checked;
-                          setAnnouncementCheck(value);
-                          updateModeration("announcementCheck", value);
-                        }}
-                      />
-                      公告審核
-                    </label>
-                    <label>
-                      <input
-                        type="checkbox"
-                        checked={messageCheck}
-                        onChange={(e) => {
-                          const value = e.target.checked;
-                          setMessageCheck(value);
-                          updateModeration("messageCheck", value);
-                        }}
-                      />
-                      留言審核
-                    </label>
+                  <span className="moderation-title">AI審核(啟動後將會產生延遲)</span>
+                    <div className="moderation-options">
+                      <label>
+                        <input
+                          type="checkbox"
+                          checked={usernameCheck}
+                          onChange={(e) => {
+                            const value = e.target.checked;
+                            setUsernameCheck(value);
+                            updateModeration("usernameCheck", value);
+                          }}
+                        />
+                        帳號審核
+                      </label>
+                      <label>
+                        <input
+                          type="checkbox"
+                          checked={announcementCheck}
+                          onChange={(e) => {
+                            const value = e.target.checked;
+                            setAnnouncementCheck(value);
+                            updateModeration("announcementCheck", value);
+                          }}
+                        />
+                        公告審核
+                      </label>
+                      <label>
+                        <input
+                          type="checkbox"
+                          checked={messageCheck}
+                          onChange={(e) => {
+                            const value = e.target.checked;
+                            setMessageCheck(value);
+                            updateModeration("messageCheck", value);
+                          }}
+                        />
+                        留言審核
+                      </label>
+                    </div>
 
                     {modError && (
                       <p style={{ color: "red" }} className="error-text">

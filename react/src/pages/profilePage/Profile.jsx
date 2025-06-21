@@ -17,7 +17,7 @@ const Profile = () => {
     password: "",
     confirmPassword: "",
   });
-
+  const [submitting, setSubmitting] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
   const triggerRefresh = () => setRefreshKey((k) => k + 1);
   useEffect(() => {
@@ -43,20 +43,26 @@ const Profile = () => {
     if (editName.length < 2) return alert("使用者名稱請至少2個字");
 
     try {
+      setSubmitting(true);
       const res = await authFetch(`${API_BASE}/users/me`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify({ username: editName }),
       });
-      if (!res.ok) throw new Error();
+     const data = await res.json();
+      if (!res.ok) {
+        alert(data.message || "修改失敗");
+        return;
+      }
       alert("使用者名稱修改成功");
       setMode("view");
       setEditName("");
-      const updatedUser = await res.json();
-      setUser(updatedUser);
+      setUser(data);
     } catch {
       alert("修改失敗");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -72,7 +78,11 @@ const Profile = () => {
         credentials: "include",
         body: JSON.stringify({ username: user.username, password }),
       });
-      if (!res.ok) throw new Error();
+      const data = await res.json();
+      if (!res.ok) {
+        alert(data.message || "修改失敗");
+        return;
+      }
       alert("密碼修改成功");
       setMode("view");
       setEditPassword({ password: "", confirmPassword: "" });
@@ -117,8 +127,8 @@ const Profile = () => {
             />
 
             <div className="button-group">
-              <button onClick={handleUpdateName}> 確認修改</button>
-              <button onClick={() => setMode("view")}>取消修改</button>
+              <button onClick={handleUpdateName} disabled={submitting}> {submitting ? "審核中..." : "確認修改"}</button>
+              <button onClick={() => setMode("view")} disabled = {submitting}>取消修改</button>
             </div>
           </div>
         )}

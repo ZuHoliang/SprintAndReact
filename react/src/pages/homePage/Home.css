@@ -94,6 +94,18 @@
 .moderation-toggle {
   margin-top: 16px;
   display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.moderation-title {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.moderation-options {
+  display: flex;
   align-items: center;
   gap: 8px;
 }

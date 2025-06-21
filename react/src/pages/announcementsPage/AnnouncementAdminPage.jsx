@@ -20,6 +20,7 @@ const AnnouncementAdminPage = () => {
   const [isCreating, setIsCreating] = useState(false);
   const [page, setpage] = useState(0);
   const [formError, setFormError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
   const authFetch = useAuthFetch();
 
   const fetchAnnouncements = async (p = 0, query = "") => {
@@ -91,6 +92,7 @@ const AnnouncementAdminPage = () => {
     const method = editId ? "PUT" : "POST";
 
     try {
+      setSubmitting(true);
       const response = await authFetch(url, {
         method,
         credentials: "include",
@@ -135,6 +137,8 @@ const AnnouncementAdminPage = () => {
     } catch (error) {
       console.error("送出失敗：", error);
       alert("發生錯誤，請稍後再試");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -188,6 +192,7 @@ const AnnouncementAdminPage = () => {
           mode={editId ? "edit" : "create"}
           onSubmit={handleFormSubmit}
           onCancel={resetForm}
+          submitting={submitting}
         />
         </>
       )}
