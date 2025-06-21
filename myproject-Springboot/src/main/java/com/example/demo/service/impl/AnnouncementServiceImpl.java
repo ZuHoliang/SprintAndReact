@@ -58,7 +58,7 @@ public class AnnouncementServiceImpl implements AnnouncementService {
 	@Override
 	public AnnouncementDto createAnnouncement(AnnouncementEditDto dto, Integer authorId) {
 		if (moderationConfig.isAnnouncementCheck() && (!aiModerationService.isAllowed(dto.getTitle()) || !aiModerationService.isAllowed(dto.getContent()))) {
-			 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "公告內容不當");
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "公告內容不當");
 		}
 		Announcement entity = announcementMapper.toEntity(dto);
 		entity.setAuthorId(authorId);

@@ -18,14 +18,19 @@ public class AIModerationServiceImpl implements AIModerationService {
 	}
 
 	static boolean containsBlock(String result) {
-		String normalized = result == null ? "" : result.toLowerCase();
-		return normalized.contains("block");
-	}
+         if (result == null) {
+                 return false;
+         }
+         String[] lines = result.trim().split("\\R"); // \R 支援跨平台換行
+         String lastLine = lines[lines.length - 1].trim();
+         lastLine = lastLine.replaceAll("[\\p{Punct}]+$", ""); // 去尾標點
+         return lastLine.equalsIgnoreCase("block");
+ }
 
 	@Override
 	public boolean isAllowed(String text) {
 		try {
-			String promptText = "啟用文字審核功能...如果內文無異常回覆'Allow'如果內文不合適回覆'Block'。回覆:" + text;
+			String promptText = "啟用文字審核功能...快速判斷內文是否合適，如果無異常回覆'allow'如果內文不合適回覆'block'。回覆:" + text;
 			String result = chatClient.prompt().user(promptText).call().content();
 			System.out.println(result);
 			return !containsBlock(result);

@@ -14,10 +14,13 @@ public interface NotificationService {
 	void sendSwapResponseNotification(User requester, boolean approved, String message);
     //發送成功通知
 	void sendSwapSuccessNotification(User requester, User target, ShiftSwapRequest request);
-	//取得使用者通知
-	List<Notification> getNotifications(User user);
+	//發送取消通知
+	void sendSwapCancelNotification(User targetUser, ShiftSwapRequest request);	
 	//刪除通知
 	void deleteNotification(User user, Long id);
+	//取得使用者通知
+	List<Notification> getNotifications(User user);
+	
 	
 	
 }

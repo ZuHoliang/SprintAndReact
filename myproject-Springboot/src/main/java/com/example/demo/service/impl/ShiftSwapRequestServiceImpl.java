@@ -170,6 +170,9 @@ public class ShiftSwapRequestServiceImpl implements ShiftSwapRequestService {
 				.orElseThrow(() -> new SwapRequestNotFoundException("找不到換班請求"));
 		request.setReqStatus(RequestStatus.CANCELLED);
 		shiftSwapRequestRepository.save(request);
+		if(request.getTargetUser() != null) {
+			notificationService.sendSwapCancelNotification(request.getTargetUser(), request);
+		}
 	}
 
 	// 查詢已發出的請求

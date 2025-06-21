@@ -52,16 +52,16 @@ public class UserRestController {
 
 	// 更新個人資料(登入後使用)
 	@PutMapping("/users/me")
-	public UserDto updatCurrentUser(@Valid @RequestBody PersonalEditDto dto, HttpSession session) {
+	public UserDto updateCurrentUser(@Valid @RequestBody PersonalEditDto dto, HttpSession session) {
 		authService.checkAuthenticated(session);
 		UserCert cert = (UserCert) session.getAttribute("userCert");
 		
 		String password = dto.getPassword();
-		if(password != null && password.isBlank()) {
+		if (password != null && password.isBlank()) {
 			password = null;
 		}
 		
-		return userService.updateUser(cert.getUserId(), dto.getUsername(), dto.getPassword());
+		return userService.updateUser(cert.getUserId(), dto.getUsername(), password);
 	}
 	
 	

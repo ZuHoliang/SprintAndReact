@@ -52,6 +52,16 @@ public class NotificationServiceImpl implements NotificationService {
 		System.out.printf("[通知] 換班成功！%s ↔ %s，日期：%s\n", requester.getUsername(), target.getUsername(),
 				request.getSwapDate());
 	}
+	
+	@Override
+	public void sendSwapCancelNotification(User targetUser, ShiftSwapRequest request) {
+		Notification notification = new Notification();
+		notification.setRecipient(targetUser);
+		notification.setType(NotificationType.SWAP_CANCELLED);
+		notification.setText("已取消換班申請");
+		notificationRepository.save(notification);
+		messagingTemplate.convertAndSend("/topic/notifications/" + targetUser.getUserId(), notification);
+	}
 
 	@Override
 	public List<Notification> getNotifications(User user) {
