@@ -18,10 +18,11 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer{
 				.withSockJS();
 	}
 	
+	//定義訊息路由規則
 	@Override
 	public void configureMessageBroker(MessageBrokerRegistry registry) {
-		registry.enableSimpleBroker("/topic");
-		registry.setApplicationDestinationPrefixes("/app");
+		registry.enableSimpleBroker("/topic"); //發送以topic為開頭的目的地訊息(訊息代理的前綴)
+		registry.setApplicationDestinationPrefixes("/app"); //應用程式前綴
 	}
 
 }
