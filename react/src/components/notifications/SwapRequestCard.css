@@ -8,9 +8,9 @@
   transition: transform 0.2s ease;
 }
 
-.swap-card:hover {
+/* .swap-card:hover {
   transform: scale(1.01);
-}
+} */
 
 .card-content {
   margin-bottom: 12px;

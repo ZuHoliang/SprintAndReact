@@ -7,6 +7,7 @@
   margin: 0 auto;
 }
 
+/* 每行7格 */
 .calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
